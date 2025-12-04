@@ -140,8 +140,10 @@ class DemoConfiguration {
     return OverlayMenuStyle(
       backgroundColor: backgroundColor,
       elevation: elevation,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(borderRadius),
+      borderRadius: BorderRadius.circular(borderRadius),
+      border: BorderSide(
+        color: Colors.grey.shade300,
+        width: 1.0,
       ),
       minWidth: minWidth,
       maxWidth: maxWidth,

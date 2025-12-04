@@ -157,23 +157,16 @@ class OverlayMenu<T> extends StatelessWidget {
       child: content,
     );
 
-    // Apply decoration
-    content = Container(
-      decoration: BoxDecoration(
-        color: effectiveStyle.backgroundColor,
+    // Apply clipping if border radius is present
+    // Material widget (when used with showOverlayMenu) handles all visual styling:
+    // backgroundColor, elevation, shape (borderRadius + border)
+    // This widget only needs to clip the content to match the shape
+    if (borderRadius != null) {
+      content = ClipRRect(
         borderRadius: borderRadius,
-        border: Border.all(
-          color: Theme.of(context).dividerColor,
-          width: 1.0,
-        ),
-      ),
-      child: borderRadius != null
-          ? ClipRRect(
-              borderRadius: borderRadius,
-              child: content,
-            )
-          : content,
-    );
+        child: content,
+      );
+    }
 
     return content;
   }

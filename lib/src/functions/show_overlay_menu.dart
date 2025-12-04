@@ -171,7 +171,7 @@ Future<T?> showOverlayMenu<T>({
                 child: GestureDetector(
                   // Absorb taps inside menu
                   onTap: () {},
-                  child: AnimatedOverlayMenu(
+                  child: AnimatedOverlayMenu(  
                     key: animationKey,
                     transformOrigin: position.transformOrigin,
                     duration: transitionDuration,
@@ -182,13 +182,23 @@ Future<T?> showOverlayMenu<T>({
                     child: SizedBox(
                       width: menuSize.width,
                       child: Material(
-                        color: Colors.transparent,
+                        // Material handles backgroundColor, elevation, and shape
+                        // This ensures consistent rendering across platforms
+                        color: style?.backgroundColor ?? Colors.white,
                         elevation: style?.elevation ?? 8.0,
                         shadowColor: style?.shadowColor,
+                        // Build shape from borderRadius and border
                         shape: style?.shape ??
                             RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8.0),
+                              borderRadius: style?.borderRadius ??
+                                  BorderRadius.circular(8.0),
+                              side: style?.border ??
+                                  BorderSide(
+                                    color: Colors.grey.shade300,
+                                    width: 1.0,
+                                  ),
                             ),
+                        // OverlayMenu only handles content layout
                         child: menuWidget,
                       ),
                     ),

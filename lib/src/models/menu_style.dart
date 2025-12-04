@@ -28,6 +28,8 @@ class OverlayMenuStyle {
     this.elevation = 8.0,
     this.shadowColor,
     this.shape,
+    this.borderRadius,
+    this.border,
     this.padding,
     this.scrollbarTheme,
   });
@@ -75,7 +77,21 @@ class OverlayMenuStyle {
   ///
   /// Defines the border radius and other shape properties.
   /// If null, uses a [RoundedRectangleBorder] with 8.0 radius.
+  /// Note: If [borderRadius] is provided, it will be used to create the shape.
   final ShapeBorder? shape;
+
+  /// Border radius of the menu.
+  ///
+  /// This is a convenience property that creates a [RoundedRectangleBorder]
+  /// with the specified radius. If [shape] is provided, this is ignored.
+  /// Defaults to [BorderRadius.circular(8.0)] if both are null.
+  final BorderRadius? borderRadius;
+
+  /// Border of the menu.
+  ///
+  /// Defines the border color and width. This will be applied to the
+  /// Material widget's shape. Defaults to a subtle grey border.
+  final BorderSide? border;
 
   /// Internal padding of the menu.
   ///
@@ -97,6 +113,8 @@ class OverlayMenuStyle {
     double? elevation,
     Color? shadowColor,
     ShapeBorder? shape,
+    BorderRadius? borderRadius,
+    BorderSide? border,
     EdgeInsetsGeometry? padding,
     ScrollbarThemeData? scrollbarTheme,
   }) {
@@ -109,6 +127,8 @@ class OverlayMenuStyle {
       elevation: elevation ?? this.elevation,
       shadowColor: shadowColor ?? this.shadowColor,
       shape: shape ?? this.shape,
+      borderRadius: borderRadius ?? this.borderRadius,
+      border: border ?? this.border,
       padding: padding ?? this.padding,
       scrollbarTheme: scrollbarTheme ?? this.scrollbarTheme,
     );
@@ -127,6 +147,8 @@ class OverlayMenuStyle {
         other.elevation == elevation &&
         other.shadowColor == shadowColor &&
         other.shape == shape &&
+        other.borderRadius == borderRadius &&
+        other.border == border &&
         other.padding == padding &&
         other.scrollbarTheme == scrollbarTheme;
   }
@@ -142,6 +164,8 @@ class OverlayMenuStyle {
       elevation,
       shadowColor,
       shape,
+      borderRadius,
+      border,
       padding,
       scrollbarTheme,
     );
