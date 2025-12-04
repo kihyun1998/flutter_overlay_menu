@@ -108,7 +108,7 @@ class AnimatedOverlayMenuState extends State<AnimatedOverlayMenu>
           scale: _scaleAnimation.value,
           alignment: widget.transformOrigin,
           child: Opacity(
-            opacity: _fadeAnimation.value,
+            opacity: _fadeAnimation.value.clamp(0.0, 1.0),
             child: child,
           ),
         );

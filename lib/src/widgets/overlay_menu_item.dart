@@ -41,6 +41,7 @@ class OverlayMenuItem<T> extends OverlayMenuEntry {
     this.trailing,
     this.onTap,
     this.enabled = true,
+    this.onItemTap, // Internal callback for closing menu
   }) : super(key: key);
 
   /// The value to return when this item is selected.
@@ -74,17 +75,21 @@ class OverlayMenuItem<T> extends OverlayMenuEntry {
   /// and will not respond to taps.
   final bool enabled;
 
+  /// Internal callback to close the menu with a value.
+  /// This is set by OverlayMenu and should not be used directly.
+  final void Function(T? value)? onItemTap;
+
   @override
   Widget build(BuildContext context) {
     return InkWell(
       onTap: enabled
           ? () {
               if (onTap != null) {
-                // Execute custom tap handler
+                // Execute custom tap handler - menu doesn't auto-close
                 onTap!();
               } else if (value != null) {
-                // Return value and close menu
-                Navigator.pop(context, value);
+                // Use callback instead of Navigator.pop
+                onItemTap?.call(value);
               }
             }
           : null,

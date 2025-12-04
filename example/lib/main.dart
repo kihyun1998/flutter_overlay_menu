@@ -178,40 +178,35 @@ class _HomePageState extends State<HomePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Menu with icons and onTap handlers'),
+            const Text('Menu with icons and value return'),
             const SizedBox(height: 12),
             IconButton(
               key: key,
               icon: const Icon(Icons.more_vert),
-              onPressed: () {
-                showOverlayMenu(
+              onPressed: () async {
+                final result = await showOverlayMenu<String>(
                   context: context,
                   anchorKey: key,
                   alignment: MenuAlignment.end,
                   builder: (context) => OverlayMenu(
                     items: [
                       OverlayMenuItem(
+                        value: 'edit',
                         leading: const Icon(Icons.edit, size: 20),
                         trailing: const Text(
                           'Ctrl+E',
                           style: TextStyle(color: Colors.grey, fontSize: 12),
                         ),
                         child: const Text('Edit'),
-                        onTap: () {
-                          setState(() => _lastAction = 'Edit');
-                          Navigator.pop(context);
-                        },
                       ),
                       OverlayMenuItem(
+                        value: 'share',
                         leading: const Icon(Icons.share, size: 20),
                         child: const Text('Share'),
-                        onTap: () {
-                          setState(() => _lastAction = 'Share');
-                          Navigator.pop(context);
-                        },
                       ),
                       const OverlayMenuDivider(),
                       OverlayMenuItem(
+                        value: 'delete',
                         leading: const Icon(
                           Icons.delete,
                           size: 20,
@@ -221,14 +216,14 @@ class _HomePageState extends State<HomePage> {
                           'Delete',
                           style: TextStyle(color: Colors.red),
                         ),
-                        onTap: () {
-                          setState(() => _lastAction = 'Delete');
-                          Navigator.pop(context);
-                        },
                       ),
                     ],
                   ),
                 );
+
+                if (result != null) {
+                  setState(() => _lastAction = result);
+                }
               },
             ),
           ],

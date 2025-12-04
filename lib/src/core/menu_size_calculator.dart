@@ -33,14 +33,25 @@ class MenuSizeCalculator {
     required OverlayMenuStyle? style,
   }) {
     // Calculate width
-    double width = style?.width ?? anchorWidth;
-
-    // Apply min/max constraints
-    if (style?.minWidth != null && width < style!.minWidth!) {
-      width = style.minWidth!;
-    }
-    if (style?.maxWidth != null && width > style!.maxWidth!) {
-      width = style.maxWidth!;
+    double width;
+    
+    if (style?.width != null) {
+      // Explicit width takes precedence
+      width = style!.width!;
+    } else {
+      // Start with anchor width
+      width = anchorWidth;
+      
+      // Apply minWidth constraint first (most important for preventing overflow)
+      final minWidth = style?.minWidth ?? 180.0; // Default minWidth
+      if (width < minWidth) {
+        width = minWidth;
+      }
+      
+      // Then apply maxWidth constraint
+      if (style?.maxWidth != null && width > style!.maxWidth!) {
+        width = style.maxWidth!;
+      }
     }
 
     // Calculate height

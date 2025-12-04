@@ -110,10 +110,24 @@ Future<T?> showOverlayMenu<T>({
   animationKey = GlobalKey<AnimatedOverlayMenuState>();
 
   // Create overlay entry
+  // Create overlay entry
   overlayEntry = OverlayEntry(
     builder: (context) {
       // Build menu widget
-      final menuWidget = builder(context);
+      Widget menuWidget = builder(context);
+
+      // If it's an OverlayMenu, wrap onItemSelected to call closeMenu
+      if (menuWidget is OverlayMenu) {
+        final originalOnItemSelected = menuWidget.onItemSelected;
+        menuWidget = OverlayMenu(
+          items: menuWidget.items,
+          style: menuWidget.style,
+          onItemSelected: (value) {
+            originalOnItemSelected?.call(value);
+            closeMenu(value as T?);
+          },
+        );
+      }
 
       // Estimate menu size
       Size menuSize;
@@ -165,15 +179,18 @@ Future<T?> showOverlayMenu<T>({
                     onAnimationComplete: () {
                       onOpen?.call();
                     },
-                    child: Material(
-                      color: Colors.transparent,
-                      elevation: style?.elevation ?? 8.0,
-                      shadowColor: style?.shadowColor,
-                      shape: style?.shape ??
-                          RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8.0),
-                          ),
-                      child: menuWidget,
+                    child: SizedBox(
+                      width: menuSize.width,
+                      child: Material(
+                        color: Colors.transparent,
+                        elevation: style?.elevation ?? 8.0,
+                        shadowColor: style?.shadowColor,
+                        shape: style?.shape ??
+                            RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8.0),
+                            ),
+                        child: menuWidget,
+                      ),
                     ),
                   ),
                 ),

@@ -77,6 +77,7 @@ class OverlayMenu<T> extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8.0),
       ),
+      minWidth: 180.0, // Default minimum width for proper content display
       maxHeight: 300.0,
     );
   }
@@ -101,43 +102,59 @@ class OverlayMenu<T> extends StatelessWidget {
       content = child!;
     } else {
       // Build from items list
-      content = ListView.builder(
-        shrinkWrap: true,
-        padding: effectiveStyle.padding,
-        itemCount: items.length,
-        itemBuilder: (context, index) {
-          final item = items[index];
+      // Inject onItemTap callback into each OverlayMenuItem
+      final processedItems = items.map((item) {
+        if (item is OverlayMenuItem<T>) {
+          // Create a new OverlayMenuItem with onItemTap callback
+          return OverlayMenuItem<T>(
+            key: item.key,
+            value: item.value,
+            leading: item.leading,
+            trailing: item.trailing,
+            onTap: item.onTap,
+            enabled: item.enabled,
+            onItemTap: (value) {
+              // Call the onItemSelected callback which showOverlayMenu will wrap with closeMenu
+              onItemSelected?.call(value as T);
+            },
+            child: item.child,
+          );
+        }
+        return item;
+      }).toList();
 
-          // If it's a menu item, potentially wrap with selection handler
-          if (item is OverlayMenuItem<T> && item.onTap == null && item.value != null) {
-            // Item doesn't have onTap, so we handle selection
-            return InkWell(
-              onTap: item.enabled
-                  ? () {
-                      onItemSelected?.call(item.value as T);
-                      Navigator.pop(context, item.value);
-                    }
-                  : null,
-              child: item,
-            );
-          }
+      content = Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: processedItems,
+      );
 
-          // Return item as-is (it handles its own tap)
-          return item;
-        },
+      // Add padding if specified
+      if (effectiveStyle.padding != null) {
+        content = Padding(
+          padding: effectiveStyle.padding!,
+          child: content,
+        );
+      }
+
+      // Make scrollable if needed
+      content = ConstrainedBox(
+        constraints: BoxConstraints(
+          maxHeight: effectiveStyle.maxHeight,
+        ),
+        child: SingleChildScrollView(
+          child: content,
+        ),
       );
     }
 
-    // Wrap in IntrinsicWidth to provide bounded width for ListView
-    content = IntrinsicWidth(
-      child: ConstrainedBox(
-        constraints: BoxConstraints(
-          minWidth: effectiveStyle.minWidth ?? 0,
-          maxWidth: effectiveStyle.maxWidth ?? double.infinity,
-          maxHeight: effectiveStyle.maxHeight,
-        ),
-        child: content,
+    // Apply size constraints
+    content = ConstrainedBox(
+      constraints: BoxConstraints(
+        minWidth: effectiveStyle.minWidth ?? 0,
+        maxWidth: effectiveStyle.maxWidth ?? double.infinity,
       ),
+      child: content,
     );
 
     // Apply decoration
