@@ -1,0 +1,195 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_overlay_menu/flutter_overlay_menu.dart';
+import '../models/demo_configuration.dart';
+
+/// Main demo button that shows the overlay menu with current configuration
+class DemoButton extends StatelessWidget {
+  final DemoConfiguration config;
+  final Function(String) onItemSelected;
+
+  const DemoButton({
+    Key? key,
+    required this.config,
+    required this.onItemSelected,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final key = GlobalKey();
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        // Main demo button
+        Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Theme.of(context).primaryColor,
+                Theme.of(context).primaryColor.withOpacity(0.7),
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: Theme.of(context).primaryColor.withOpacity(0.3),
+                blurRadius: 12,
+                offset: const Offset(0, 6),
+              ),
+            ],
+          ),
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              key: key,
+              onTap: () => _showMenu(context, key),
+              borderRadius: BorderRadius.circular(16),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 48,
+                  vertical: 24,
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.touch_app,
+                      size: 48,
+                      color: Colors.white,
+                    ),
+                    const SizedBox(height: 12),
+                    const Text(
+                      '🎯 Demo Menu Button',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Tap to test current settings',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.white.withOpacity(0.9),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: 16),
+        // Preview summary
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          decoration: BoxDecoration(
+            color: Colors.blue.shade50,
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(
+              color: Colors.blue.shade200,
+              width: 1,
+            ),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.info_outline,
+                size: 16,
+                color: Colors.blue.shade700,
+              ),
+              const SizedBox(width: 8),
+              Flexible(
+                child: Text(
+                  config.previewSummary,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.blue.shade900,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Future<void> _showMenu(BuildContext context, GlobalKey key) async {
+    final result = await showOverlayMenu<String>(
+      context: context,
+      anchorKey: key,
+      positionPreference: config.positionPreference,
+      alignment: config.alignment,
+      offset: config.offset,
+      buttonGap: config.buttonGap,
+      screenMargin: config.screenMargin,
+      transitionDuration: Duration(milliseconds: config.durationMs),
+      transitionCurve: config.curve,
+      style: config.toMenuStyle(),
+      barrierDismissible: config.barrierDismissible,
+      barrierColor: config.barrierColor,
+      builder: (context) => OverlayMenu(
+        items: _buildMenuItems(context),
+      ),
+    );
+
+    if (result != null) {
+      onItemSelected(result);
+    }
+  }
+
+  List<OverlayMenuEntry> _buildMenuItems(BuildContext context) {
+    final isDarkBg = config.backgroundColor.computeLuminance() < 0.5;
+    final textColor = isDarkBg ? Colors.white : Colors.black87;
+    final dangerColor = isDarkBg ? Colors.redAccent : Colors.red;
+
+    final items = <OverlayMenuEntry>[];
+
+    for (int i = 0; i < config.items.length; i++) {
+      final item = config.items[i];
+
+      items.add(
+        OverlayMenuItem(
+          value: item.id,
+          leading: item.leadingIcon != null
+              ? Icon(
+                  item.leadingIcon,
+                  size: 20,
+                  color: item.isDangerous ? dangerColor : textColor,
+                )
+              : null,
+          trailing: item.trailingText != null
+              ? Text(
+                  item.trailingText!,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: textColor.withOpacity(0.6),
+                  ),
+                )
+              : null,
+          child: Text(
+            item.label,
+            style: TextStyle(
+              color: item.isDangerous ? dangerColor : textColor,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ),
+      );
+
+      // Add divider if specified
+      if (item.hasDividerAfter && i < config.items.length - 1) {
+        items.add(const OverlayMenuDivider());
+      }
+    }
+
+    return items;
+  }
+}

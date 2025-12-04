@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_overlay_menu/flutter_overlay_menu.dart';
+import 'models/demo_configuration.dart';
+import 'constants/presets.dart';
+import 'widgets/demo_button.dart';
+import 'widgets/preset_buttons.dart';
+import 'widgets/customization_panel.dart';
 
 void main() {
   runApp(const MyApp());
@@ -11,399 +15,343 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Overlay Menu Demo',
+      title: 'Flutter Overlay Menu Playground',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.blue,
+          brightness: Brightness.light,
+        ),
         useMaterial3: true,
+        cardTheme: CardThemeData(
+          elevation: 2,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
       ),
-      home: const HomePage(),
+      home: const PlaygroundPage(),
     );
   }
 }
 
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+class PlaygroundPage extends StatefulWidget {
+  const PlaygroundPage({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<PlaygroundPage> createState() => _PlaygroundPageState();
 }
 
-class _HomePageState extends State<HomePage> {
-  String? _selectedFruit;
-  String? _lastAction;
+class _PlaygroundPageState extends State<PlaygroundPage> {
+  late DemoConfiguration _config;
+  String? _selectedPreset;
+  String? _lastSelectedItem;
+
+  @override
+  void initState() {
+    super.initState();
+    _config = DemoPresets.material;
+    _selectedPreset = 'Material';
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFFAFAFA),
       appBar: AppBar(
+        elevation: 0,
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: const Text('Flutter Overlay Menu Examples'),
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
+        title: const Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Example 1: Basic Dropdown
-            _buildSectionTitle('1. Basic Dropdown'),
-            _buildExample1(),
-            const SizedBox(height: 32),
+            Text(
+              'Flutter Overlay Menu',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            Text(
+              'Interactive Playground',
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.normal,
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.info_outline),
+            onPressed: _showInfoDialog,
+            tooltip: 'About',
+          ),
+        ],
+      ),
+      body: SafeArea(
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            // Responsive layout
+            final isWide = constraints.maxWidth > 800;
 
-            // Example 2: Icon Menu
-            _buildSectionTitle('2. Icon Menu with Actions'),
-            _buildExample2(),
-            const SizedBox(height: 32),
-
-            // Example 3: Custom Style
-            _buildSectionTitle('3. Custom Style'),
-            _buildExample3(),
-            const SizedBox(height: 32),
-
-            // Example 4: Alignment Options
-            _buildSectionTitle('4. Alignment Options'),
-            _buildExample4(),
-            const SizedBox(height: 32),
-
-            // Example 5: Position Preference
-            _buildSectionTitle('5. Position Preference'),
-            _buildExample5(),
-            const SizedBox(height: 32),
-
-            // Status Display
-            if (_selectedFruit != null || _lastAction != null)
-              Card(
-                color: Colors.blue.shade50,
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Status:',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
+            if (isWide) {
+              // Desktop/Tablet layout: Side by side
+              return Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Left side: Demo button
+                  Expanded(
+                    flex: 2,
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.all(24),
+                      child: Column(
+                        children: [
+                          const SizedBox(height: 40),
+                          DemoButton(
+                            config: _config,
+                            onItemSelected: _handleItemSelected,
+                          ),
+                          const SizedBox(height: 40),
+                          if (_lastSelectedItem != null)
+                            _buildResultCard(),
+                        ],
                       ),
-                      const SizedBox(height: 8),
-                      if (_selectedFruit != null)
-                        Text('Selected fruit: $_selectedFruit'),
-                      if (_lastAction != null)
-                        Text('Last action: $_lastAction'),
-                    ],
+                    ),
                   ),
+
+                  // Divider
+                  Container(
+                    width: 1,
+                    color: Colors.grey.shade300,
+                  ),
+
+                  // Right side: Controls
+                  Expanded(
+                    flex: 3,
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.all(24),
+                      child: Column(
+                        children: [
+                          PresetButtons(
+                            selectedPreset: _selectedPreset,
+                            onPresetSelected: _handlePresetSelected,
+                          ),
+                          const SizedBox(height: 16),
+                          CustomizationPanel(
+                            config: _config,
+                            onConfigChanged: _handleConfigChanged,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            } else {
+              // Mobile layout: Stacked
+              return SingleChildScrollView(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  children: [
+                    // Demo button at top
+                    DemoButton(
+                      config: _config,
+                      onItemSelected: _handleItemSelected,
+                    ),
+                    const SizedBox(height: 24),
+
+                    // Result card
+                    if (_lastSelectedItem != null)
+                      _buildResultCard(),
+                    if (_lastSelectedItem != null)
+                      const SizedBox(height: 24),
+
+                    // Presets
+                    PresetButtons(
+                      selectedPreset: _selectedPreset,
+                      onPresetSelected: _handlePresetSelected,
+                    ),
+                    const SizedBox(height: 16),
+
+                    // Customization
+                    CustomizationPanel(
+                      config: _config,
+                      onConfigChanged: _handleConfigChanged,
+                    ),
+                  ],
+                ),
+              );
+            }
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildResultCard() {
+    final item = _config.items.firstWhere(
+      (i) => i.id == _lastSelectedItem,
+      orElse: () => _config.items.first,
+    );
+
+    return Card(
+      color: Colors.green.shade50,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          children: [
+            Icon(
+              Icons.check_circle,
+              color: Colors.green.shade700,
+              size: 24,
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Last Selection',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    '"${item.label}"',
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    'Config: ${_config.previewSummary}',
+                    style: TextStyle(
+                      fontSize: 11,
+                      color: Colors.grey.shade600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            IconButton(
+              icon: const Icon(Icons.close, size: 18),
+              onPressed: () {
+                setState(() {
+                  _lastSelectedItem = null;
+                });
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _handlePresetSelected(String name, DemoConfiguration config) {
+    setState(() {
+      _config = config;
+      _selectedPreset = name;
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Applied "$name" preset'),
+        duration: const Duration(seconds: 1),
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+  }
+
+  void _handleConfigChanged(DemoConfiguration config) {
+    setState(() {
+      _config = config;
+      _selectedPreset = null; // Custom configuration
+    });
+  }
+
+  void _handleItemSelected(String itemId) {
+    setState(() {
+      _lastSelectedItem = itemId;
+    });
+
+    final item = _config.items.firstWhere(
+      (i) => i.id == itemId,
+      orElse: () => _config.items.first,
+    );
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            const Icon(Icons.check, color: Colors.white),
+            const SizedBox(width: 8),
+            Text('Selected: "${item.label}"'),
+          ],
+        ),
+        backgroundColor: Colors.green.shade700,
+        duration: const Duration(seconds: 2),
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+  }
+
+  void _showInfoDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Row(
+          children: [
+            Icon(Icons.info_outline, color: Colors.blue),
+            SizedBox(width: 8),
+            Text('About'),
+          ],
+        ),
+        content: const SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'Flutter Overlay Menu Playground',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSectionTitle(String title) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12.0),
-      child: Text(
-        title,
-        style: const TextStyle(
-          fontSize: 18,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-    );
-  }
-
-  // Example 1: Basic Dropdown
-  Widget _buildExample1() {
-    final key = GlobalKey();
-
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text('Simple fruit selector with value return'),
-            const SizedBox(height: 12),
-            TextButton(
-              key: key,
-              onPressed: () async {
-                final result = await showOverlayMenu<String>(
-                  context: context,
-                  anchorKey: key,
-                  builder: (context) => OverlayMenu(
-                    items: [
-                      OverlayMenuItem(
-                        value: 'Apple',
-                        child: const Text('🍎 Apple'),
-                      ),
-                      OverlayMenuItem(
-                        value: 'Banana',
-                        child: const Text('🍌 Banana'),
-                      ),
-                      OverlayMenuItem(
-                        value: 'Orange',
-                        child: const Text('🍊 Orange'),
-                      ),
-                      OverlayMenuItem(
-                        value: 'Grape',
-                        child: const Text('🍇 Grape'),
-                      ),
-                    ],
-                  ),
-                );
-
-                if (result != null) {
-                  setState(() => _selectedFruit = result);
-                }
-              },
-              child: Text(
-                _selectedFruit ?? 'Select a fruit',
-                style: const TextStyle(fontSize: 16),
+              SizedBox(height: 8),
+              Text(
+                'This interactive demo showcases all the customization options available in the flutter_overlay_menu package.',
               ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  // Example 2: Icon Menu with Actions
-  Widget _buildExample2() {
-    final key = GlobalKey();
-
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text('Menu with icons and value return'),
-            const SizedBox(height: 12),
-            IconButton(
-              key: key,
-              icon: const Icon(Icons.more_vert),
-              onPressed: () async {
-                final result = await showOverlayMenu<String>(
-                  context: context,
-                  anchorKey: key,
-                  alignment: MenuAlignment.end,
-                  builder: (context) => OverlayMenu(
-                    items: [
-                      OverlayMenuItem(
-                        value: 'edit',
-                        leading: const Icon(Icons.edit, size: 20),
-                        trailing: const Text(
-                          'Ctrl+E',
-                          style: TextStyle(color: Colors.grey, fontSize: 12),
-                        ),
-                        child: const Text('Edit'),
-                      ),
-                      OverlayMenuItem(
-                        value: 'share',
-                        leading: const Icon(Icons.share, size: 20),
-                        child: const Text('Share'),
-                      ),
-                      const OverlayMenuDivider(),
-                      OverlayMenuItem(
-                        value: 'delete',
-                        leading: const Icon(
-                          Icons.delete,
-                          size: 20,
-                          color: Colors.red,
-                        ),
-                        child: const Text(
-                          'Delete',
-                          style: TextStyle(color: Colors.red),
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-
-                if (result != null) {
-                  setState(() => _lastAction = result);
-                }
-              },
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  // Example 3: Custom Style
-  Widget _buildExample3() {
-    final key = GlobalKey();
-
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text('Dark theme with custom animation'),
-            const SizedBox(height: 12),
-            ElevatedButton(
-              key: key,
-              onPressed: () {
-                showOverlayMenu(
-                  context: context,
-                  anchorKey: key,
-                  transitionDuration: const Duration(milliseconds: 300),
-                  transitionCurve: Curves.elasticOut,
-                  style: const OverlayMenuStyle(
-                    minWidth: 200,
-                    backgroundColor: Color(0xFF212121),
-                    elevation: 12,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(16)),
-                    ),
-                    padding: EdgeInsets.symmetric(vertical: 8),
-                  ),
-                  builder: (context) => OverlayMenu(
-                    items: [
-                      OverlayMenuItem(
-                        value: 'dark1',
-                        child: const Text(
-                          'Dark Item 1',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                        onTap: () {
-                          setState(() => _lastAction = 'Dark Item 1');
-                          Navigator.pop(context);
-                        },
-                      ),
-                      OverlayMenuItem(
-                        value: 'dark2',
-                        child: const Text(
-                          'Dark Item 2',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                        onTap: () {
-                          setState(() => _lastAction = 'Dark Item 2');
-                          Navigator.pop(context);
-                        },
-                      ),
-                    ],
-                  ),
-                );
-              },
-              child: const Text('Show Dark Menu'),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  // Example 4: Different Alignments
-  Widget _buildExample4() {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text('Test different horizontal alignments'),
-            const SizedBox(height: 12),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                _buildAlignmentButton('Start', MenuAlignment.start),
-                _buildAlignmentButton('Center', MenuAlignment.center),
-                _buildAlignmentButton('End', MenuAlignment.end),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildAlignmentButton(String label, MenuAlignment alignment) {
-    final key = GlobalKey();
-
-    return ElevatedButton(
-      key: key,
-      onPressed: () {
-        showOverlayMenu(
-          context: context,
-          anchorKey: key,
-          alignment: alignment,
-          builder: (context) => OverlayMenu(
-            items: [
-              OverlayMenuItem(
-                child: Text('$label aligned'),
-                onTap: () {
-                  setState(() => _lastAction = '$label alignment');
-                  Navigator.pop(context);
-                },
+              SizedBox(height: 16),
+              Text(
+                'Features:',
+                style: TextStyle(fontWeight: FontWeight.w600),
               ),
-              OverlayMenuItem(
-                child: const Text('Item 2'),
-                onTap: () => Navigator.pop(context),
+              SizedBox(height: 8),
+              Text('• Dynamic style customization'),
+              Text('• Position & alignment control'),
+              Text('• Animation configuration'),
+              Text('• Menu item management'),
+              Text('• Quick presets'),
+              Text('• Responsive layout'),
+              SizedBox(height: 16),
+              Text(
+                'Try changing the settings and tap the demo button to see the results!',
+                style: TextStyle(fontStyle: FontStyle.italic),
               ),
             ],
           ),
-        );
-      },
-      child: Text(label),
-    );
-  }
-
-  // Example 5: Position Preference
-  Widget _buildExample5() {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text('Force menu to appear above or below'),
-            const SizedBox(height: 12),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                _buildPositionButton('Auto', PositionPreference.auto),
-                _buildPositionButton('Below', PositionPreference.below),
-                _buildPositionButton('Above', PositionPreference.above),
-              ],
-            ),
-          ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildPositionButton(String label, PositionPreference preference) {
-    final key = GlobalKey();
-
-    return ElevatedButton(
-      key: key,
-      onPressed: () {
-        showOverlayMenu(
-          context: context,
-          anchorKey: key,
-          positionPreference: preference,
-          builder: (context) => OverlayMenu(
-            items: [
-              OverlayMenuItem(
-                child: Text('Position: $label'),
-                onTap: () {
-                  setState(() => _lastAction = 'Position: $label');
-                  Navigator.pop(context);
-                },
-              ),
-              OverlayMenuItem(
-                child: const Text('Item 2'),
-                onTap: () => Navigator.pop(context),
-              ),
-            ],
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Got it!'),
           ),
-        );
-      },
-      child: Text(label),
+        ],
+      ),
     );
   }
 }
