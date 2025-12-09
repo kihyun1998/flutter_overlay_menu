@@ -176,7 +176,7 @@ class OverlayMenuItem<T> extends OverlayMenuEntry {
     ShapeBorder? shape;
     if (effectiveStyle.border != null || effectiveStyle.borderRadius != null) {
       shape = RoundedRectangleBorder(
-        side: effectiveStyle.border != null 
+        side: effectiveStyle.border != null
             ? (effectiveStyle.border as Border).top // Use border if available
             : BorderSide.none,
         borderRadius: effectiveStyle.borderRadius ?? BorderRadius.zero,

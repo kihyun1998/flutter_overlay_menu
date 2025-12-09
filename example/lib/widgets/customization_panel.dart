@@ -468,9 +468,11 @@ class _ItemStyleSection extends StatelessWidget {
         // Selected Background Color
         _ColorSetting(
           label: 'Selected Background',
-          color: config.selectedItemBackgroundColor ?? Theme.of(context).colorScheme.primary.withOpacity(0.08),
+          color: config.selectedItemBackgroundColor ??
+              Theme.of(context).colorScheme.primary.withOpacity(0.08),
           onChanged: (color) {
-            onConfigChanged(config.copyWith(selectedItemBackgroundColor: color));
+            onConfigChanged(
+                config.copyWith(selectedItemBackgroundColor: color));
           },
         ),
         const SizedBox(height: 12),
@@ -478,7 +480,8 @@ class _ItemStyleSection extends StatelessWidget {
         // Selected Hover Color
         _ColorSetting(
           label: 'Selected Hover',
-          color: config.selectedItemHoverColor ?? Theme.of(context).colorScheme.primary.withOpacity(0.12),
+          color: config.selectedItemHoverColor ??
+              Theme.of(context).colorScheme.primary.withOpacity(0.12),
           onChanged: (color) {
             onConfigChanged(config.copyWith(selectedItemHoverColor: color));
           },
@@ -488,7 +491,8 @@ class _ItemStyleSection extends StatelessWidget {
         // Selected Text Color
         _ColorSetting(
           label: 'Selected Text Color',
-          color: config.selectedItemTextColor ?? Theme.of(context).colorScheme.primary,
+          color: config.selectedItemTextColor ??
+              Theme.of(context).colorScheme.primary,
           onChanged: (color) {
             onConfigChanged(config.copyWith(selectedItemTextColor: color));
           },
@@ -498,7 +502,8 @@ class _ItemStyleSection extends StatelessWidget {
         // Selected Icon Color
         _ColorSetting(
           label: 'Selected Icon Color',
-          color: config.selectedItemIconColor ?? Theme.of(context).colorScheme.primary,
+          color: config.selectedItemIconColor ??
+              Theme.of(context).colorScheme.primary,
           onChanged: (color) {
             onConfigChanged(config.copyWith(selectedItemIconColor: color));
           },
@@ -524,8 +529,9 @@ class _DividerStyleSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Get current divider style or use defaults
-    final currentDividerStyle = config.dividerStyle ?? OverlayMenuDividerStyle.defaultStyle(context);
-    
+    final currentDividerStyle =
+        config.dividerStyle ?? OverlayMenuDividerStyle.defaultStyle(context);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -646,7 +652,8 @@ class _ScrollbarStyleSection extends StatelessWidget {
         // Always Visible Toggle
         SwitchListTile(
           title: const Text('Always Visible', style: TextStyle(fontSize: 13)),
-          subtitle: const Text('Show scrollbar even when not scrolling', style: TextStyle(fontSize: 11)),
+          subtitle: const Text('Show scrollbar even when not scrolling',
+              style: TextStyle(fontSize: 11)),
           value: config.scrollbarAlwaysVisible,
           onChanged: (value) {
             onConfigChanged(config.copyWith(scrollbarAlwaysVisible: value));
@@ -707,7 +714,8 @@ class _ScrollbarStyleSection extends StatelessWidget {
         // Track Visible Toggle
         SwitchListTile(
           title: const Text('Show Track', style: TextStyle(fontSize: 13)),
-          subtitle: const Text('Display scrollbar track background', style: TextStyle(fontSize: 11)),
+          subtitle: const Text('Display scrollbar track background',
+              style: TextStyle(fontSize: 11)),
           value: config.scrollbarTrackVisible,
           onChanged: (value) {
             onConfigChanged(config.copyWith(scrollbarTrackVisible: value));
@@ -968,7 +976,8 @@ class _MenuItemsSection extends StatelessWidget {
   void _removeItem() {
     if (config.items.isNotEmpty) {
       onConfigChanged(
-        config.copyWith(items: config.items.sublist(0, config.items.length - 1)),
+        config.copyWith(
+            items: config.items.sublist(0, config.items.length - 1)),
       );
     }
   }
@@ -1056,7 +1065,8 @@ class _AdvancedSection extends StatelessWidget {
       children: [
         // Barrier Dismissible
         SwitchListTile(
-          title: const Text('Barrier Dismissible', style: TextStyle(fontSize: 13)),
+          title:
+              const Text('Barrier Dismissible', style: TextStyle(fontSize: 13)),
           value: config.barrierDismissible,
           onChanged: (value) {
             onConfigChanged(config.copyWith(barrierDismissible: value));

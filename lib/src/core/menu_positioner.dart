@@ -71,7 +71,9 @@ class MenuPositioner {
 
     // Calculate available height for the menu
     final availableHeight = direction == MenuDirection.below
-        ? screenSize.height - (anchorOffset.dy + anchorSize.height + buttonGap) - screenMargin
+        ? screenSize.height -
+            (anchorOffset.dy + anchorSize.height + buttonGap) -
+            screenMargin
         : anchorOffset.dy - buttonGap - screenMargin;
 
     return MenuPosition(
@@ -101,7 +103,8 @@ class MenuPositioner {
       case PositionPreference.auto:
         // Calculate available space
         final spaceAbove = anchorY - screenMargin;
-        final spaceBelow = screenHeight - (anchorY + anchorHeight) - screenMargin;
+        final spaceBelow =
+            screenHeight - (anchorY + anchorHeight) - screenMargin;
 
         // Prefer below if there's enough space
         if (spaceBelow >= menuHeight) {

@@ -111,7 +111,7 @@ Future<T?> showOverlayMenu<T>({
 
   // Build menu widget early to estimate size
   Widget menuWidget = builder(context);
-  
+
   // Estimate menu size BEFORE creating overlay
   Size menuSize;
   if (menuWidget is OverlayMenu) {
@@ -149,15 +149,17 @@ Future<T?> showOverlayMenu<T>({
       // If it's an OverlayMenu, wrap onItemSelected to call closeMenu
       if (builtMenuWidget is OverlayMenu) {
         final originalOnItemSelected = builtMenuWidget.onItemSelected;
-        
+
         // Merge styles, ensuring maxHeight is constrained to available space
         final originalStyle = style ?? builtMenuWidget.style;
         final constrainedStyle = originalStyle?.copyWith(
-          maxHeight: (originalStyle.maxHeight).clamp(0.0, position.availableHeight),
-        ) ?? OverlayMenuStyle(
-          maxHeight: position.availableHeight,
-        );
-        
+              maxHeight: (originalStyle.maxHeight)
+                  .clamp(0.0, position.availableHeight),
+            ) ??
+            OverlayMenuStyle(
+              maxHeight: position.availableHeight,
+            );
+
         builtMenuWidget = OverlayMenu(
           items: builtMenuWidget.items,
           style: constrainedStyle,
@@ -177,14 +179,14 @@ Future<T?> showOverlayMenu<T>({
         child: Container(
           color: barrierColor,
           child: Stack(
-            children: [ 
+            children: [
               Positioned(
                 left: position.offset.dx,
                 top: position.offset.dy,
-                child: GestureDetector( 
+                child: GestureDetector(
                   // Absorb taps inside menu
                   onTap: () {},
-                  child: AnimatedOverlayMenu(  
+                  child: AnimatedOverlayMenu(
                     key: animationKey,
                     transformOrigin: position.transformOrigin,
                     duration: transitionDuration,

@@ -245,10 +245,10 @@ class AnimationCurves {
 
   static String getName(Curve curve) {
     return curves.entries
-            .firstWhere(
-              (entry) => entry.value == curve,
-              orElse: () => const MapEntry('easeOutCubic', Curves.easeOutCubic),
-            )
-            .key;
+        .firstWhere(
+          (entry) => entry.value == curve,
+          orElse: () => const MapEntry('easeOutCubic', Curves.easeOutCubic),
+        )
+        .key;
   }
 }

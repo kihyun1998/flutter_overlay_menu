@@ -90,9 +90,7 @@ class _PresetChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: isSelected
-          ? Theme.of(context).primaryColor
-          : Colors.grey.shade100,
+      color: isSelected ? Theme.of(context).primaryColor : Colors.grey.shade100,
       borderRadius: BorderRadius.circular(20),
       child: InkWell(
         onTap: onTap,

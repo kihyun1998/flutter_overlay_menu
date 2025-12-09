@@ -106,7 +106,7 @@ class OverlayMenu<T> extends StatelessWidget {
       // Inject onItemTap callback and menuStyle into each OverlayMenuItem
       // Only recreate items if they need modification
       final processedItems = <Widget>[];
-      
+
       for (final item in items) {
         if (item is OverlayMenuItem<T>) {
           // Only create a new item if we need to inject callbacks/styles
@@ -131,7 +131,8 @@ class OverlayMenu<T> extends StatelessWidget {
           );
         } else if (item is OverlayMenuDivider) {
           // Only recreate if divider style needs to be injected
-          if (effectiveStyle.dividerStyle != null && item.menuDividerStyle == null) {
+          if (effectiveStyle.dividerStyle != null &&
+              item.menuDividerStyle == null) {
             processedItems.add(
               OverlayMenuDivider(
                 key: item.key,
@@ -169,11 +170,12 @@ class OverlayMenu<T> extends StatelessWidget {
           maxHeight: effectiveStyle.maxHeight,
         ),
         child: ScrollbarTheme(
-          data: effectiveStyle.scrollbarTheme ?? ScrollbarThemeData(
-            thumbVisibility: MaterialStateProperty.all(false),
-            thickness: MaterialStateProperty.all(6.0),
-            radius: const Radius.circular(3.0),
-          ),
+          data: effectiveStyle.scrollbarTheme ??
+              ScrollbarThemeData(
+                thumbVisibility: MaterialStateProperty.all(false),
+                thickness: MaterialStateProperty.all(6.0),
+                radius: const Radius.circular(3.0),
+              ),
           child: _ScrollableContent(child: content),
         ),
       );
