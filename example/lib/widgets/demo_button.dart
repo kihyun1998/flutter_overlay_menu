@@ -154,15 +154,32 @@ class DemoButton extends StatelessWidget {
 
     for (int i = 0; i < config.items.length; i++) {
       final item = config.items[i];
+      final isSelected = item.id == '2'; // Demo: Mark second item as selected
+
+      // Custom style for dangerous items (if no global itemStyle is set)
+      OverlayMenuItemStyle? customStyle;
+      if (item.isDangerous && config.itemStyle == null) {
+        customStyle = OverlayMenuItemStyle(
+          backgroundColor: dangerColor.withOpacity(0.05),
+          hoverColor: dangerColor.withOpacity(0.1),
+          splashColor: dangerColor.withOpacity(0.2),
+          border: Border.all(color: dangerColor.withOpacity(0.3)),
+          borderRadius: BorderRadius.circular(8),
+          margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+        );
+      }
 
       items.add(
         OverlayMenuItem(
           value: item.id,
+          selected: isSelected,
+          itemStyle: customStyle,
           leading: item.leadingIcon != null
               ? Icon(
                   item.leadingIcon,
                   size: 20,
-                  color: item.isDangerous ? dangerColor : textColor,
+                  color: item.isDangerous ? dangerColor : null,
                 )
               : null,
           trailing: item.trailingText != null

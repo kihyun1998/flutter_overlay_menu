@@ -109,19 +109,58 @@ Future<T?> showOverlayMenu<T>({
   // Create animation key
   animationKey = GlobalKey<AnimatedOverlayMenuState>();
 
-  // Create overlay entry
-  // Create overlay entry
+  // Build menu widget early to estimate size
+  Widget menuWidget = builder(context);
+  
+  // Estimate menu size BEFORE creating overlay
+  Size menuSize;
+  if (menuWidget is OverlayMenu) {
+    menuSize = MenuSizeCalculator.estimateSize(
+      items: menuWidget.items,
+      anchorWidth: renderBox.size.width,
+      style: style ?? menuWidget.style,
+    );
+  } else {
+    // Custom widget, use default/style size
+    menuSize = Size(
+      style?.width ?? renderBox.size.width,
+      style?.maxHeight ?? 300.0,
+    );
+  }
+
+  // Calculate position BEFORE creating overlay (while renderBox is still attached)
+  final position = MenuPositioner.calculatePosition(
+    context: context,
+    anchorBox: renderBox,
+    menuSize: menuSize,
+    preference: positionPreference,
+    alignment: alignment,
+    buttonGap: buttonGap,
+    screenMargin: screenMargin,
+    additionalOffset: offset,
+  );
+
+  // Create overlay entry with cached position and size
   overlayEntry = OverlayEntry(
     builder: (context) {
-      // Build menu widget
-      Widget menuWidget = builder(context);
+      // Rebuild menu widget in case it needs context
+      Widget builtMenuWidget = builder(context);
 
       // If it's an OverlayMenu, wrap onItemSelected to call closeMenu
-      if (menuWidget is OverlayMenu) {
-        final originalOnItemSelected = menuWidget.onItemSelected;
-        menuWidget = OverlayMenu(
-          items: menuWidget.items,
-          style: menuWidget.style,
+      if (builtMenuWidget is OverlayMenu) {
+        final originalOnItemSelected = builtMenuWidget.onItemSelected;
+        
+        // Merge styles, ensuring maxHeight is constrained to available space
+        final originalStyle = style ?? builtMenuWidget.style;
+        final constrainedStyle = originalStyle?.copyWith(
+          maxHeight: (originalStyle.maxHeight).clamp(0.0, position.availableHeight),
+        ) ?? OverlayMenuStyle(
+          maxHeight: position.availableHeight,
+        );
+        
+        builtMenuWidget = OverlayMenu(
+          items: builtMenuWidget.items,
+          style: constrainedStyle,
           onItemSelected: (value) {
             originalOnItemSelected?.call(value);
             closeMenu(value as T?);
@@ -129,33 +168,7 @@ Future<T?> showOverlayMenu<T>({
         );
       }
 
-      // Estimate menu size
-      Size menuSize;
-      if (menuWidget is OverlayMenu) {
-        menuSize = MenuSizeCalculator.estimateSize(
-          items: menuWidget.items,
-          anchorWidth: renderBox.size.width,
-          style: style ?? menuWidget.style,
-        );
-      } else {
-        // Custom widget, use default/style size
-        menuSize = Size(
-          style?.width ?? renderBox.size.width,
-          style?.maxHeight ?? 300.0,
-        );
-      }
-
-      // Calculate position
-      final position = MenuPositioner.calculatePosition(
-        context: context,
-        anchorBox: renderBox,
-        menuSize: menuSize,
-        preference: positionPreference,
-        alignment: alignment,
-        buttonGap: buttonGap,
-        screenMargin: screenMargin,
-        additionalOffset: offset,
-      );
+      // Use cached position and size (no recalculation on rebuild)
 
       return GestureDetector(
         // Detect taps outside menu
@@ -164,11 +177,11 @@ Future<T?> showOverlayMenu<T>({
         child: Container(
           color: barrierColor,
           child: Stack(
-            children: [
+            children: [ 
               Positioned(
                 left: position.offset.dx,
                 top: position.offset.dy,
-                child: GestureDetector(
+                child: GestureDetector( 
                   // Absorb taps inside menu
                   onTap: () {},
                   child: AnimatedOverlayMenu(  
@@ -181,6 +194,7 @@ Future<T?> showOverlayMenu<T>({
                     },
                     child: SizedBox(
                       width: menuSize.width,
+                      // Height is controlled by OverlayMenu's maxHeight style
                       child: Material(
                         // Material handles backgroundColor, elevation, and shape
                         // This ensures consistent rendering across platforms
@@ -199,7 +213,7 @@ Future<T?> showOverlayMenu<T>({
                                   ),
                             ),
                         // OverlayMenu only handles content layout
-                        child: menuWidget,
+                        child: builtMenuWidget,
                       ),
                     ),
                   ),

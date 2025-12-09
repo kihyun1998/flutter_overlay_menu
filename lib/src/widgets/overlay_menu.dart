@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+
 import '../models/menu_style.dart';
+import 'overlay_menu_divider.dart';
 import 'overlay_menu_entry.dart';
 import 'overlay_menu_item.dart';
 
@@ -25,12 +27,11 @@ import 'overlay_menu_item.dart';
 class OverlayMenu<T> extends StatelessWidget {
   /// Creates an overlay menu with a list of items.
   const OverlayMenu({
-    Key? key,
+    super.key,
     required this.items,
     this.onItemSelected,
     this.style,
-  })  : child = null,
-        super(key: key);
+  }) : child = null;
 
   /// Creates an overlay menu with custom content.
   ///
@@ -48,12 +49,11 @@ class OverlayMenu<T> extends StatelessWidget {
   /// )
   /// ```
   const OverlayMenu.custom({
-    Key? key,
+    super.key,
     required Widget this.child,
     this.style,
   })  : items = const [],
-        onItemSelected = null,
-        super(key: key);
+        onItemSelected = null;
 
   /// The list of menu entries to display.
   final List<OverlayMenuEntry> items;
@@ -102,26 +102,51 @@ class OverlayMenu<T> extends StatelessWidget {
       content = child!;
     } else {
       // Build from items list
-      // Inject onItemTap callback into each OverlayMenuItem
-      final processedItems = items.map((item) {
+      // Inject onItemTap callback and menuStyle into each OverlayMenuItem
+      // Only recreate items if they need modification
+      final processedItems = <Widget>[];
+      
+      for (final item in items) {
         if (item is OverlayMenuItem<T>) {
-          // Create a new OverlayMenuItem with onItemTap callback
-          return OverlayMenuItem<T>(
-            key: item.key,
-            value: item.value,
-            leading: item.leading,
-            trailing: item.trailing,
-            onTap: item.onTap,
-            enabled: item.enabled,
-            onItemTap: (value) {
-              // Call the onItemSelected callback which showOverlayMenu will wrap with closeMenu
-              onItemSelected?.call(value as T);
-            },
-            child: item.child,
+          // Only create a new item if we need to inject callbacks/styles
+          // Most items will need this, so we recreate
+          processedItems.add(
+            OverlayMenuItem<T>(
+              key: item.key,
+              value: item.value,
+              leading: item.leading,
+              trailing: item.trailing,
+              onTap: item.onTap,
+              enabled: item.enabled,
+              selected: item.selected,
+              itemStyle: item.itemStyle,
+              onItemTap: (value) {
+                // Call the onItemSelected callback which showOverlayMenu will wrap with closeMenu
+                onItemSelected?.call(value as T);
+              },
+              menuStyle: effectiveStyle, // Pass menu style for inheritance
+              child: item.child,
+            ),
           );
+        } else if (item is OverlayMenuDivider) {
+          // Only recreate if divider style needs to be injected
+          if (effectiveStyle.dividerStyle != null && item.menuDividerStyle == null) {
+            processedItems.add(
+              OverlayMenuDivider(
+                key: item.key,
+                style: item.style,
+                menuDividerStyle: effectiveStyle.dividerStyle,
+              ),
+            );
+          } else {
+            // Can reuse the original divider
+            processedItems.add(item);
+          }
+        } else {
+          // Unknown item type, add as-is
+          processedItems.add(item);
         }
-        return item;
-      }).toList();
+      }
 
       content = Column(
         mainAxisSize: MainAxisSize.min,
@@ -142,8 +167,17 @@ class OverlayMenu<T> extends StatelessWidget {
         constraints: BoxConstraints(
           maxHeight: effectiveStyle.maxHeight,
         ),
-        child: SingleChildScrollView(
-          child: content,
+        child: ScrollbarTheme(
+          data: effectiveStyle.scrollbarTheme ?? ScrollbarThemeData(
+            thumbVisibility: MaterialStateProperty.all(false),
+            thickness: MaterialStateProperty.all(6.0),
+            radius: const Radius.circular(3.0),
+          ),
+          child: Scrollbar(
+            child: SingleChildScrollView(
+              child: content,
+            ),
+          ),
         ),
       );
     }

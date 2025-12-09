@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import '../models/menu_divider_style.dart';
+import '../models/menu_style.dart';
 import 'overlay_menu_entry.dart';
 
 /// A divider widget for overlay menus.
 ///
 /// Creates a horizontal line to separate menu items.
-/// The appearance can be customized using the provided properties.
+/// The appearance can be customized using the provided properties
+/// or through the menu's dividerStyle.
 ///
 /// Example:
 /// ```dart
@@ -16,46 +19,93 @@ import 'overlay_menu_entry.dart';
 ///   ],
 /// )
 /// ```
+///
+/// Example with custom style:
+/// ```dart
+/// OverlayMenuDivider(
+///   style: OverlayMenuDividerStyle(
+///     height: 12,
+///     thickness: 2,
+///     color: Colors.grey[300],
+///     indent: 12,
+///     endIndent: 12,
+///   ),
+/// )
+/// ```
 class OverlayMenuDivider extends OverlayMenuEntry {
   /// Creates a menu divider.
   const OverlayMenuDivider({
     Key? key,
-    this.height = 1.0,
-    this.thickness = 1.0,
-    this.color,
-    this.indent = 0.0,
-    this.endIndent = 0.0,
+    this.style,
+    this.menuDividerStyle, // Internal: from OverlayMenu
   }) : super(key: key);
 
-  /// The divider's height including any spacing above and below.
+  /// Custom style for this specific divider.
   ///
-  /// Defaults to 1.0.
-  final double height;
+  /// Overrides the menu's dividerStyle.
+  final OverlayMenuDividerStyle? style;
 
-  /// The thickness of the divider line.
+  /// Internal: menu-level divider style passed from OverlayMenu.
+  /// Should not be set by users.
+  final OverlayMenuDividerStyle? menuDividerStyle;
+
+  /// Gets the effective height of this divider.
   ///
-  /// Defaults to 1.0.
-  final double thickness;
-
-  /// The color of the divider.
-  ///
-  /// If null, uses [ThemeData.dividerColor].
-  final Color? color;
-
-  /// The amount of empty space to the left of the divider.
-  final double indent;
-
-  /// The amount of empty space to the right of the divider.
-  final double endIndent;
+  /// Uses the height from style, menuDividerStyle, or defaults to 16.0.
+  /// This is used by MenuSizeCalculator for size estimation.
+  double get height {
+    // Priority: style > menuDividerStyle > default (16.0)
+    return style?.height ?? menuDividerStyle?.height ?? 16.0;
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Divider(
-      height: height,
-      thickness: thickness,
-      color: color,
-      indent: indent,
-      endIndent: endIndent,
+    final effectiveStyle = _resolveStyle(context);
+
+    return Container(
+      height: effectiveStyle.height,
+      alignment: Alignment.center,
+      child: Divider(
+        thickness: effectiveStyle.thickness,
+        color: effectiveStyle.color,
+        indent: effectiveStyle.indent,
+        endIndent: effectiveStyle.endIndent,
+        height: 0, // Inner height (we control outer height with Container)
+      ),
+    );
+  }
+
+  /// Resolves the effective style based on priority:
+  /// 1. style (this widget)
+  /// 2. menuDividerStyle (from menuStyle)
+  /// 3. Default style
+  OverlayMenuDividerStyle _resolveStyle(BuildContext context) {
+    // 1. Individual divider style takes priority
+    if (style != null) {
+      return _mergeWithDefaults(context, style!);
+    }
+
+    // 2. Menu's divider style
+    if (menuDividerStyle != null) {
+      return _mergeWithDefaults(context, menuDividerStyle!);
+    }
+
+    // 3. Default style
+    return OverlayMenuDividerStyle.defaultStyle(context);
+  }
+
+  /// Merges the provided style with defaults.
+  OverlayMenuDividerStyle _mergeWithDefaults(
+    BuildContext context,
+    OverlayMenuDividerStyle dividerStyle,
+  ) {
+    final defaults = OverlayMenuDividerStyle.defaultStyle(context);
+    return OverlayMenuDividerStyle(
+      height: dividerStyle.height ?? defaults.height,
+      thickness: dividerStyle.thickness ?? defaults.thickness,
+      color: dividerStyle.color ?? defaults.color,
+      indent: dividerStyle.indent ?? defaults.indent,
+      endIndent: dividerStyle.endIndent ?? defaults.endIndent,
     );
   }
 }

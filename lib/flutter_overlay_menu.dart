@@ -56,5 +56,7 @@ export 'src/widgets/overlay_menu_entry.dart';
 
 // Models
 export 'src/models/menu_style.dart';
+export 'src/models/menu_item_style.dart';
+export 'src/models/menu_divider_style.dart';
 export 'src/models/enums.dart';
 // Note: menu_position.dart is internal only, not exported

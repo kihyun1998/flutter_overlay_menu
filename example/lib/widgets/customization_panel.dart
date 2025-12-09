@@ -16,110 +16,110 @@ class CustomizationPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 2,
-      child: ExpansionTile(
-        initiallyExpanded: true,
-        leading: const Icon(Icons.settings),
-        title: const Text(
-          '⚙️ Customization Panel',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
+    return Column(
+      children: [
+        // Menu Style Panel
+        _buildPanel(
+          title: '🎨 Menu Style',
+          icon: Icons.style,
+          child: _MenuStyleSection(
+            config: config,
+            onConfigChanged: onConfigChanged,
           ),
         ),
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Menu Style Section
-                _buildSection(
-                  title: 'Menu Style',
-                  icon: Icons.style,
-                  child: _MenuStyleSection(
-                    config: config,
-                    onConfigChanged: onConfigChanged,
-                  ),
-                ),
-                const SizedBox(height: 24),
+        const SizedBox(height: 12),
 
-                // Position & Alignment Section
-                _buildSection(
-                  title: 'Position & Alignment',
-                  icon: Icons.place,
-                  child: _PositionSection(
-                    config: config,
-                    onConfigChanged: onConfigChanged,
-                  ),
-                ),
-                const SizedBox(height: 24),
-
-                // Animation Section
-                _buildSection(
-                  title: 'Animation',
-                  icon: Icons.animation,
-                  child: _AnimationSection(
-                    config: config,
-                    onConfigChanged: onConfigChanged,
-                  ),
-                ),
-                const SizedBox(height: 24),
-
-                // Menu Items Section
-                _buildSection(
-                  title: 'Menu Items',
-                  icon: Icons.list,
-                  child: _MenuItemsSection(
-                    config: config,
-                    onConfigChanged: onConfigChanged,
-                  ),
-                ),
-                const SizedBox(height: 24),
-
-                // Advanced Options Section
-                _buildSection(
-                  title: 'Advanced Options',
-                  icon: Icons.tune,
-                  child: _AdvancedSection(
-                    config: config,
-                    onConfigChanged: onConfigChanged,
-                  ),
-                ),
-              ],
-            ),
+        // Item Style Panel
+        _buildPanel(
+          title: '🖌️ Item Style',
+          icon: Icons.format_paint,
+          child: _ItemStyleSection(
+            config: config,
+            onConfigChanged: onConfigChanged,
           ),
-        ],
-      ),
+        ),
+        const SizedBox(height: 12),
+
+        // Divider Style Panel
+        _buildPanel(
+          title: '➖ Divider Style',
+          icon: Icons.horizontal_rule,
+          child: _DividerStyleSection(
+            config: config,
+            onConfigChanged: onConfigChanged,
+          ),
+        ),
+        const SizedBox(height: 12),
+
+        // Position & Alignment Panel
+        _buildPanel(
+          title: '📍 Position & Alignment',
+          icon: Icons.place,
+          child: _PositionSection(
+            config: config,
+            onConfigChanged: onConfigChanged,
+          ),
+        ),
+        const SizedBox(height: 12),
+
+        // Animation Panel
+        _buildPanel(
+          title: '✨ Animation',
+          icon: Icons.animation,
+          child: _AnimationSection(
+            config: config,
+            onConfigChanged: onConfigChanged,
+          ),
+        ),
+        const SizedBox(height: 12),
+
+        // Menu Items Panel
+        _buildPanel(
+          title: '📋 Menu Items',
+          icon: Icons.list,
+          child: _MenuItemsSection(
+            config: config,
+            onConfigChanged: onConfigChanged,
+          ),
+        ),
+        const SizedBox(height: 12),
+
+        // Advanced Options Panel
+        _buildPanel(
+          title: '⚙️ Advanced Options',
+          icon: Icons.tune,
+          child: _AdvancedSection(
+            config: config,
+            onConfigChanged: onConfigChanged,
+          ),
+        ),
+      ],
     );
   }
 
-  Widget _buildSection({
+  Widget _buildPanel({
     required String title,
     required IconData icon,
     required Widget child,
   }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Icon(icon, size: 18, color: Colors.blue.shade700),
-            const SizedBox(width: 8),
-            Text(
-              title,
-              style: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w600,
-                color: Colors.grey.shade800,
-              ),
-            ),
-          ],
+    return Card(
+      elevation: 2,
+      child: ExpansionTile(
+        leading: Icon(icon, color: Colors.blue.shade700),
+        title: Text(
+          title,
+          style: const TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.w600,
+          ),
         ),
-        const SizedBox(height: 12),
-        child,
-      ],
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+            child: child,
+          ),
+        ],
+      ),
     );
   }
 }
@@ -190,6 +190,307 @@ class _MenuStyleSection extends StatelessWidget {
           onChanged: (value) {
             onConfigChanged(config.copyWith(minWidth: value));
           },
+        ),
+        const SizedBox(height: 12),
+
+        // Max Height
+        _SliderSetting(
+          label: 'Max Height',
+          value: config.maxHeight,
+          min: 100,
+          max: 600,
+          divisions: 50,
+          unit: 'px',
+          onChanged: (value) {
+            onConfigChanged(config.copyWith(maxHeight: value));
+          },
+        ),
+      ],
+    );
+  }
+}
+
+// ============================================================================
+// Item Style Section
+// ============================================================================
+
+class _ItemStyleSection extends StatelessWidget {
+  final DemoConfiguration config;
+  final Function(DemoConfiguration) onConfigChanged;
+
+  const _ItemStyleSection({
+    required this.config,
+    required this.onConfigChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    // Get current item style or use defaults
+    final currentItemStyle = config.itemStyle ?? OverlayMenuItemStyle.defaultNormal(context);
+    
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Item Height
+        _SliderSetting(
+          label: 'Item Height',
+          value: currentItemStyle.height ?? 48.0,
+          min: 32,
+          max: 64,
+          divisions: 32,
+          unit: 'px',
+          onChanged: (value) {
+            onConfigChanged(config.copyWith(
+              itemStyle: currentItemStyle.copyWith(height: value),
+            ));
+          },
+        ),
+        const SizedBox(height: 12),
+
+        // Horizontal Padding
+        _SliderSetting(
+          label: 'Horizontal Padding',
+          value: (currentItemStyle.padding as EdgeInsets?)?.horizontal ?? 32.0,
+          min: 8,
+          max: 32,
+          divisions: 24,
+          unit: 'px',
+          onChanged: (value) {
+            onConfigChanged(config.copyWith(
+              itemStyle: currentItemStyle.copyWith(
+                padding: EdgeInsets.symmetric(horizontal: value / 2),
+              ),
+            ));
+          },
+        ),
+        const SizedBox(height: 12),
+
+        // Hover Color
+        _ColorSetting(
+          label: 'Hover Color',
+          color: currentItemStyle.hoverColor ?? Colors.grey.shade200,
+          onChanged: (color) {
+            onConfigChanged(config.copyWith(
+              itemStyle: currentItemStyle.copyWith(hoverColor: color),
+            ));
+          },
+        ),
+        const SizedBox(height: 12),
+
+        // Item Border Radius
+        _SliderSetting(
+          label: 'Item Border Radius',
+          value: (currentItemStyle.borderRadius as BorderRadius?)?.topLeft.x ?? 0.0,
+          min: 0,
+          max: 16,
+          divisions: 16,
+          unit: 'px',
+          onChanged: (value) {
+            onConfigChanged(config.copyWith(
+              itemStyle: currentItemStyle.copyWith(
+                borderRadius: BorderRadius.circular(value),
+              ),
+            ));
+          },
+        ),
+        const SizedBox(height: 12),
+
+        // Text Size
+        _SliderSetting(
+          label: 'Text Size',
+          value: currentItemStyle.textStyle?.fontSize ?? 14.0,
+          min: 10,
+          max: 20,
+          divisions: 20,
+          unit: 'px',
+          onChanged: (value) {
+            onConfigChanged(config.copyWith(
+              itemStyle: currentItemStyle.copyWith(
+                textStyle: (currentItemStyle.textStyle ?? const TextStyle()).copyWith(
+                  fontSize: value,
+                ),
+              ),
+            ));
+          },
+        ),
+        const SizedBox(height: 12),
+
+        // Icon Size
+        _SliderSetting(
+          label: 'Icon Size',
+          value: currentItemStyle.iconSize ?? 24.0,
+          min: 16,
+          max: 32,
+          divisions: 16,
+          unit: 'px',
+          onChanged: (value) {
+            onConfigChanged(config.copyWith(
+              itemStyle: currentItemStyle.copyWith(iconSize: value),
+            ));
+          },
+        ),
+        const SizedBox(height: 12),
+
+        // Icon Color
+        Row(
+          children: [
+            const Text('Icon Color:', style: TextStyle(fontSize: 13)),
+            const Spacer(),
+            TextButton(
+              onPressed: () {
+                onConfigChanged(config.copyWith(
+                  itemStyle: currentItemStyle.copyWith(
+                    iconColor: Colors.blue,
+                  ),
+                ));
+              },
+              child: const Text('Default'),
+            ),
+          ],
+        ),
+        const SizedBox(height: 4),
+        _ColorSetting(
+          label: '',
+          color: currentItemStyle.iconColor ?? Colors.grey.shade700,
+          onChanged: (color) {
+            onConfigChanged(config.copyWith(
+              itemStyle: currentItemStyle.copyWith(iconColor: color),
+            ));
+          },
+        ),
+        const SizedBox(height: 12),
+
+        // Reset Button
+        Center(
+          child: TextButton.icon(
+            onPressed: () {
+              onConfigChanged(config.copyWith(
+                itemStyle: OverlayMenuItemStyle.defaultNormal(context),
+              ));
+            },
+            icon: const Icon(Icons.refresh, size: 18),
+            label: const Text('Reset to Default'),
+            style: TextButton.styleFrom(
+              foregroundColor: Colors.orange,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+// ============================================================================
+// Divider Style Section
+// ============================================================================
+
+class _DividerStyleSection extends StatelessWidget {
+  final DemoConfiguration config;
+  final Function(DemoConfiguration) onConfigChanged;
+
+  const _DividerStyleSection({
+    required this.config,
+    required this.onConfigChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    // Get current divider style or use defaults
+    final currentDividerStyle = config.dividerStyle ?? OverlayMenuDividerStyle.defaultStyle(context);
+    
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Divider Height
+        _SliderSetting(
+          label: 'Divider Height',
+          value: currentDividerStyle.height ?? 16.0,
+          min: 8,
+          max: 32,
+          divisions: 24,
+          unit: 'px',
+          onChanged: (value) {
+            onConfigChanged(config.copyWith(
+              dividerStyle: currentDividerStyle.copyWith(height: value),
+            ));
+          },
+        ),
+        const SizedBox(height: 12),
+
+        // Divider Thickness
+        _SliderSetting(
+          label: 'Divider Thickness',
+          value: currentDividerStyle.thickness ?? 1.0,
+          min: 0.5,
+          max: 4,
+          divisions: 7,
+          unit: 'px',
+          onChanged: (value) {
+            onConfigChanged(config.copyWith(
+              dividerStyle: currentDividerStyle.copyWith(thickness: value),
+            ));
+          },
+        ),
+        const SizedBox(height: 12),
+
+        // Divider Color
+        _ColorSetting(
+          label: 'Divider Color',
+          color: currentDividerStyle.color ?? Theme.of(context).dividerColor,
+          onChanged: (color) {
+            onConfigChanged(config.copyWith(
+              dividerStyle: currentDividerStyle.copyWith(color: color),
+            ));
+          },
+        ),
+        const SizedBox(height: 12),
+
+        // Left Indent
+        _SliderSetting(
+          label: 'Left Indent',
+          value: currentDividerStyle.indent ?? 16.0,
+          min: 0,
+          max: 32,
+          divisions: 32,
+          unit: 'px',
+          onChanged: (value) {
+            onConfigChanged(config.copyWith(
+              dividerStyle: currentDividerStyle.copyWith(indent: value),
+            ));
+          },
+        ),
+        const SizedBox(height: 12),
+
+        // Right Indent
+        _SliderSetting(
+          label: 'Right Indent',
+          value: currentDividerStyle.endIndent ?? 16.0,
+          min: 0,
+          max: 32,
+          divisions: 32,
+          unit: 'px',
+          onChanged: (value) {
+            onConfigChanged(config.copyWith(
+              dividerStyle: currentDividerStyle.copyWith(endIndent: value),
+            ));
+          },
+        ),
+        const SizedBox(height: 12),
+
+        // Reset Button
+        Center(
+          child: TextButton.icon(
+            onPressed: () {
+              onConfigChanged(config.copyWith(
+                dividerStyle: OverlayMenuDividerStyle.defaultStyle(context),
+              ));
+            },
+            icon: const Icon(Icons.refresh, size: 18),
+            label: const Text('Reset to Default'),
+            style: TextButton.styleFrom(
+              foregroundColor: Colors.orange,
+            ),
+          ),
         ),
       ],
     );

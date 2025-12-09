@@ -46,6 +46,7 @@ class DemoConfiguration {
   final Color backgroundColor;
   final double minWidth;
   final double? maxWidth;
+  final double maxHeight;
 
   // Position
   final PositionPreference positionPreference;
@@ -58,6 +59,11 @@ class DemoConfiguration {
 
   // Items
   final List<DemoMenuItem> items;
+
+  // Item Styles (NEW)
+  final OverlayMenuItemStyle? itemStyle;
+  final OverlayMenuItemStyle? selectedItemStyle;
+  final OverlayMenuDividerStyle? dividerStyle;
 
   // Advanced
   final bool barrierDismissible;
@@ -72,6 +78,7 @@ class DemoConfiguration {
     this.backgroundColor = Colors.white,
     this.minWidth = 180.0,
     this.maxWidth,
+    this.maxHeight = 300.0,
     // Position
     this.positionPreference = PositionPreference.auto,
     this.alignment = MenuAlignment.start,
@@ -81,6 +88,10 @@ class DemoConfiguration {
     this.curve = Curves.easeOutCubic,
     // Items
     required this.items,
+    // Item Styles
+    this.itemStyle,
+    this.selectedItemStyle,
+    this.dividerStyle,
     // Advanced
     this.barrierDismissible = true,
     this.barrierColor = Colors.transparent,
@@ -94,12 +105,16 @@ class DemoConfiguration {
     Color? backgroundColor,
     double? minWidth,
     double? maxWidth,
+    double? maxHeight,
     PositionPreference? positionPreference,
     MenuAlignment? alignment,
     Offset? offset,
     int? durationMs,
     Curve? curve,
     List<DemoMenuItem>? items,
+    OverlayMenuItemStyle? itemStyle,
+    OverlayMenuItemStyle? selectedItemStyle,
+    OverlayMenuDividerStyle? dividerStyle,
     bool? barrierDismissible,
     Color? barrierColor,
     double? buttonGap,
@@ -111,12 +126,16 @@ class DemoConfiguration {
       backgroundColor: backgroundColor ?? this.backgroundColor,
       minWidth: minWidth ?? this.minWidth,
       maxWidth: maxWidth ?? this.maxWidth,
+      maxHeight: maxHeight ?? this.maxHeight,
       positionPreference: positionPreference ?? this.positionPreference,
       alignment: alignment ?? this.alignment,
       offset: offset ?? this.offset,
       durationMs: durationMs ?? this.durationMs,
       curve: curve ?? this.curve,
       items: items ?? this.items,
+      itemStyle: itemStyle ?? this.itemStyle,
+      selectedItemStyle: selectedItemStyle ?? this.selectedItemStyle,
+      dividerStyle: dividerStyle ?? this.dividerStyle,
       barrierDismissible: barrierDismissible ?? this.barrierDismissible,
       barrierColor: barrierColor ?? this.barrierColor,
       buttonGap: buttonGap ?? this.buttonGap,
@@ -147,6 +166,10 @@ class DemoConfiguration {
       ),
       minWidth: minWidth,
       maxWidth: maxWidth,
+      maxHeight: maxHeight,
+      itemStyle: itemStyle,
+      selectedItemStyle: selectedItemStyle,
+      dividerStyle: dividerStyle,
     );
   }
 }

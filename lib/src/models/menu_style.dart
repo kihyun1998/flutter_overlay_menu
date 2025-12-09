@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'menu_item_style.dart';
+import 'menu_divider_style.dart';
 
 /// Style configuration for overlay menus.
 ///
@@ -32,6 +34,9 @@ class OverlayMenuStyle {
     this.border,
     this.padding,
     this.scrollbarTheme,
+    this.itemStyle,
+    this.selectedItemStyle,
+    this.dividerStyle,
   });
 
   /// Fixed width for the menu.
@@ -103,6 +108,23 @@ class OverlayMenuStyle {
   /// This will be used in Phase 2+.
   final ScrollbarThemeData? scrollbarTheme;
 
+  /// Default item style for normal (non-selected) items.
+  ///
+  /// If null, uses built-in default normal item style.
+  final OverlayMenuItemStyle? itemStyle;
+
+  /// Default item style for selected items.
+  ///
+  /// Applied when OverlayMenuItem.selected is true.
+  /// If null, uses built-in default selected item style.
+  final OverlayMenuItemStyle? selectedItemStyle;
+
+  /// Style for menu dividers.
+  ///
+  /// Applied to OverlayMenuDivider widgets.
+  /// If null, uses built-in default divider style.
+  final OverlayMenuDividerStyle? dividerStyle;
+
   /// Creates a copy of this style with the given fields replaced.
   OverlayMenuStyle copyWith({
     double? width,
@@ -117,6 +139,9 @@ class OverlayMenuStyle {
     BorderSide? border,
     EdgeInsetsGeometry? padding,
     ScrollbarThemeData? scrollbarTheme,
+    OverlayMenuItemStyle? itemStyle,
+    OverlayMenuItemStyle? selectedItemStyle,
+    OverlayMenuDividerStyle? dividerStyle,
   }) {
     return OverlayMenuStyle(
       width: width ?? this.width,
@@ -131,6 +156,9 @@ class OverlayMenuStyle {
       border: border ?? this.border,
       padding: padding ?? this.padding,
       scrollbarTheme: scrollbarTheme ?? this.scrollbarTheme,
+      itemStyle: itemStyle ?? this.itemStyle,
+      selectedItemStyle: selectedItemStyle ?? this.selectedItemStyle,
+      dividerStyle: dividerStyle ?? this.dividerStyle,
     );
   }
 
@@ -150,7 +178,10 @@ class OverlayMenuStyle {
         other.borderRadius == borderRadius &&
         other.border == border &&
         other.padding == padding &&
-        other.scrollbarTheme == scrollbarTheme;
+        other.scrollbarTheme == scrollbarTheme &&
+        other.itemStyle == itemStyle &&
+        other.selectedItemStyle == selectedItemStyle &&
+        other.dividerStyle == dividerStyle;
   }
 
   @override
@@ -168,6 +199,9 @@ class OverlayMenuStyle {
       border,
       padding,
       scrollbarTheme,
+      itemStyle,
+      selectedItemStyle,
+      dividerStyle,
     );
   }
 }

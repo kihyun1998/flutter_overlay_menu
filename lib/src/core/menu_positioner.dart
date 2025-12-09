@@ -69,10 +69,16 @@ class MenuPositioner {
         ? Alignment.topCenter
         : Alignment.bottomCenter;
 
+    // Calculate available height for the menu
+    final availableHeight = direction == MenuDirection.below
+        ? screenSize.height - (anchorOffset.dy + anchorSize.height + buttonGap) - screenMargin
+        : anchorOffset.dy - buttonGap - screenMargin;
+
     return MenuPosition(
       offset: finalOffset,
       direction: direction,
       transformOrigin: transformOrigin,
+      availableHeight: availableHeight,
     );
   }
 

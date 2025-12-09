@@ -11,6 +11,7 @@ class MenuPosition {
     required this.offset,
     required this.direction,
     required this.transformOrigin,
+    required this.availableHeight,
   });
 
   /// The calculated position offset for the menu.
@@ -27,4 +28,10 @@ class MenuPosition {
   /// Typically [Alignment.topCenter] for menus below, and
   /// [Alignment.bottomCenter] for menus above.
   final Alignment transformOrigin;
+
+  /// The maximum available height for the menu in this position.
+  ///
+  /// This is the actual space available on screen, considering screen margins.
+  /// The menu should constrain its height to this value to avoid overflow.
+  final double availableHeight;
 }

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../models/menu_item_style.dart';
+import '../models/menu_style.dart';
 import 'overlay_menu_entry.dart';
 
 /// A menu item widget for overlay menus.
@@ -22,14 +24,27 @@ import 'overlay_menu_entry.dart';
 /// )
 /// ```
 ///
-/// Example with value:
+/// Example with value and selection:
 /// ```dart
 /// OverlayMenuItem(
 ///   value: 'edit',
 ///   leading: Icon(Icons.edit),
 ///   child: Text('Edit'),
+///   selected: currentValue == 'edit',
 /// )
-/// // Menu auto-closes and returns 'edit'
+/// ```
+///
+/// Example with custom style:
+/// ```dart
+/// OverlayMenuItem(
+///   value: 'delete',
+///   child: Text('Delete'),
+///   itemStyle: OverlayMenuItemStyle(
+///     backgroundColor: Colors.red[50],
+///     hoverColor: Colors.red[100],
+///     textStyle: TextStyle(color: Colors.red),
+///   ),
+/// )
 /// ```
 class OverlayMenuItem<T> extends OverlayMenuEntry {
   /// Creates a menu item.
@@ -41,7 +56,10 @@ class OverlayMenuItem<T> extends OverlayMenuEntry {
     this.trailing,
     this.onTap,
     this.enabled = true,
+    this.selected = false,
+    this.itemStyle,
     this.onItemTap, // Internal callback for closing menu
+    this.menuStyle, // Internal: menu-level style
   }) : super(key: key);
 
   /// The value to return when this item is selected.
@@ -75,44 +93,149 @@ class OverlayMenuItem<T> extends OverlayMenuEntry {
   /// and will not respond to taps.
   final bool enabled;
 
+  /// Whether this item is currently selected.
+  ///
+  /// When true and no itemStyle is provided, uses the menu's
+  /// selectedItemStyle or built-in selected style.
+  final bool selected;
+
+  /// Custom style for this specific item.
+  ///
+  /// Overrides both itemStyle and selectedItemStyle from OverlayMenuStyle.
+  /// Use this for special items (e.g., delete button).
+  final OverlayMenuItemStyle? itemStyle;
+
   /// Internal callback to close the menu with a value.
   /// This is set by OverlayMenu and should not be used directly.
   final void Function(T? value)? onItemTap;
 
+  /// Internal: menu-level style passed from OverlayMenu.
+  /// Should not be set by users.
+  final OverlayMenuStyle? menuStyle;
+
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: enabled
-          ? () {
-              if (onTap != null) {
-                // Execute custom tap handler - menu doesn't auto-close
-                onTap!();
-              } else if (value != null) {
-                // Use callback instead of Navigator.pop
-                onItemTap?.call(value);
-              }
-            }
-          : null,
-      child: Opacity(
-        opacity: enabled ? 1.0 : 0.5,
-        child: Container(
-          height: 48.0,
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: Row(
-            children: [
-              if (leading != null) ...[
-                leading!,
-                const SizedBox(width: 12.0),
-              ],
-              Expanded(child: child),
-              if (trailing != null) ...[
-                const SizedBox(width: 12.0),
-                trailing!,
-              ],
-            ],
-          ),
-        ),
+    final effectiveStyle = _resolveStyle(context);
+
+    Widget content = Container(
+      height: effectiveStyle.height,
+      padding: effectiveStyle.padding,
+      child: Row(
+        children: [
+          if (leading != null) ...[
+            leading!,
+            SizedBox(width: effectiveStyle.leadingGap),
+          ],
+          Expanded(child: child),
+          if (trailing != null) ...[
+            SizedBox(width: effectiveStyle.trailingGap),
+            trailing!,
+          ],
+        ],
       ),
     );
+
+    // Apply IconTheme
+    if (effectiveStyle.iconColor != null || effectiveStyle.iconSize != null) {
+      content = IconTheme(
+        data: IconThemeData(
+          color: effectiveStyle.iconColor,
+          size: effectiveStyle.iconSize,
+        ),
+        child: content,
+      );
+    }
+
+    // Apply DefaultTextStyle
+    if (effectiveStyle.textStyle != null) {
+      content = DefaultTextStyle.merge(
+        style: effectiveStyle.textStyle,
+        child: content,
+      );
+    }
+
+    // Apply opacity for disabled state
+    if (!enabled) {
+      content = Opacity(opacity: 0.5, child: content);
+    }
+
+    // Wrap with InkWell for interactions
+    content = InkWell(
+      onTap: enabled ? _handleTap : null,
+      hoverColor: effectiveStyle.hoverColor,
+      splashColor: effectiveStyle.splashColor,
+      highlightColor: effectiveStyle.highlightColor,
+      borderRadius: effectiveStyle.borderRadius,
+      child: content,
+    );
+
+    // Wrap with Material for elevation (if needed)
+    if ((effectiveStyle.elevation ?? 0.0) > 0.0) {
+      content = Material(
+        color: Colors.transparent,
+        elevation: effectiveStyle.elevation!,
+        shadowColor: effectiveStyle.shadowColor,
+        borderRadius: effectiveStyle.borderRadius,
+        child: content,
+      );
+    }
+
+    // Wrap with Container for background, border, and margin
+    content = Container(
+      margin: effectiveStyle.margin,
+      decoration: BoxDecoration(
+        color: effectiveStyle.backgroundColor,
+        border: effectiveStyle.border,
+        borderRadius: effectiveStyle.borderRadius,
+      ),
+      child: content,
+    );
+
+    return content;
+  }
+
+  /// Resolves the effective style based on priority:
+  /// 1. itemStyle (this widget)
+  /// 2. selectedItemStyle or itemStyle (from menuStyle)
+  /// 3. Default styles
+  OverlayMenuItemStyle _resolveStyle(BuildContext context) {
+    // 1. Individual item style takes priority
+    if (itemStyle != null) {
+      return _mergeWithDefaults(context, itemStyle!);
+    }
+
+    // 2. Menu's selected/normal style
+    if (selected && menuStyle?.selectedItemStyle != null) {
+      return _mergeWithDefaults(context, menuStyle!.selectedItemStyle!);
+    }
+    if (menuStyle?.itemStyle != null) {
+      return _mergeWithDefaults(context, menuStyle!.itemStyle!);
+    }
+
+    // 3. Default styles
+    return selected
+        ? OverlayMenuItemStyle.defaultSelected(context)
+        : OverlayMenuItemStyle.defaultNormal(context);
+  }
+
+  /// Merges the provided style with defaults.
+  OverlayMenuItemStyle _mergeWithDefaults(
+    BuildContext context,
+    OverlayMenuItemStyle style,
+  ) {
+    final defaults = selected
+        ? OverlayMenuItemStyle.defaultSelected(context)
+        : OverlayMenuItemStyle.defaultNormal(context);
+    return defaults.merge(style);
+  }
+
+  void _handleTap() {
+    if (onTap != null) {
+      // Execute custom tap handler - menu doesn't auto-close
+      onTap!();
+    } else if (value != null) {
+      // Use callback instead of Navigator.pop
+      onItemTap?.call(value);
+    }
   }
 }
