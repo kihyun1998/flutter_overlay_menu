@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-
 import '../models/menu_style.dart';
-import 'overlay_menu_divider.dart';
 import 'overlay_menu_entry.dart';
 import 'overlay_menu_item.dart';
+import 'overlay_menu_divider.dart';
 
 /// A widget that displays a menu with a list of items.
 ///
@@ -27,11 +26,12 @@ import 'overlay_menu_item.dart';
 class OverlayMenu<T> extends StatelessWidget {
   /// Creates an overlay menu with a list of items.
   const OverlayMenu({
-    super.key,
+    Key? key,
     required this.items,
     this.onItemSelected,
     this.style,
-  }) : child = null;
+  })  : child = null,
+        super(key: key);
 
   /// Creates an overlay menu with custom content.
   ///
@@ -49,11 +49,12 @@ class OverlayMenu<T> extends StatelessWidget {
   /// )
   /// ```
   const OverlayMenu.custom({
-    super.key,
+    Key? key,
     required Widget this.child,
     this.style,
   })  : items = const [],
-        onItemSelected = null;
+        onItemSelected = null,
+        super(key: key);
 
   /// The list of menu entries to display.
   final List<OverlayMenuEntry> items;
@@ -173,13 +174,18 @@ class OverlayMenu<T> extends StatelessWidget {
             thickness: MaterialStateProperty.all(6.0),
             radius: const Radius.circular(3.0),
           ),
-          child: Scrollbar(
-            child: SingleChildScrollView(
-              child: content,
-            ),
-          ),
+          child: _ScrollableContent(child: content),
         ),
       );
+
+      // Apply clipping to scrollable content if border radius is present
+      // This prevents scrollbar from overflowing rounded corners
+      if (borderRadius != null) {
+        content = ClipRRect(
+          borderRadius: borderRadius,
+          child: content,
+        );
+      }
     }
 
     // Apply size constraints
@@ -191,17 +197,43 @@ class OverlayMenu<T> extends StatelessWidget {
       child: content,
     );
 
-    // Apply clipping if border radius is present
-    // Material widget (when used with showOverlayMenu) handles all visual styling:
-    // backgroundColor, elevation, shape (borderRadius + border)
-    // This widget only needs to clip the content to match the shape
-    if (borderRadius != null) {
-      content = ClipRRect(
-        borderRadius: borderRadius,
-        child: content,
-      );
-    }
-
     return content;
+  }
+}
+
+/// A stateful widget that manages ScrollController for Scrollbar
+class _ScrollableContent extends StatefulWidget {
+  const _ScrollableContent({required this.child});
+
+  final Widget child;
+
+  @override
+  State<_ScrollableContent> createState() => _ScrollableContentState();
+}
+
+class _ScrollableContentState extends State<_ScrollableContent> {
+  late final ScrollController _scrollController;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController = ScrollController();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scrollbar(
+      controller: _scrollController,
+      child: SingleChildScrollView(
+        controller: _scrollController,
+        child: widget.child,
+      ),
+    );
   }
 }

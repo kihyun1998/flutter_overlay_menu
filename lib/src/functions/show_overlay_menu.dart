@@ -201,6 +201,7 @@ Future<T?> showOverlayMenu<T>({
                         color: style?.backgroundColor ?? Colors.white,
                         elevation: style?.elevation ?? 8.0,
                         shadowColor: style?.shadowColor,
+                        clipBehavior: Clip.antiAlias, // Clip content to shape
                         // Build shape from borderRadius and border
                         shape: style?.shape ??
                             RoundedRectangleBorder(

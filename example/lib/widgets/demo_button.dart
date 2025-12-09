@@ -132,7 +132,7 @@ class DemoButton extends StatelessWidget {
       screenMargin: config.screenMargin,
       transitionDuration: Duration(milliseconds: config.durationMs),
       transitionCurve: config.curve,
-      style: config.toMenuStyle(),
+      style: config.toMenuStyle(context),
       barrierDismissible: config.barrierDismissible,
       barrierColor: config.barrierColor,
       builder: (context) => OverlayMenu(
@@ -156,9 +156,9 @@ class DemoButton extends StatelessWidget {
       final item = config.items[i];
       final isSelected = item.id == '2'; // Demo: Mark second item as selected
 
-      // Custom style for dangerous items (if no global itemStyle is set)
+      // Custom style for dangerous items (always applied if item is dangerous)
       OverlayMenuItemStyle? customStyle;
-      if (item.isDangerous && config.itemStyle == null) {
+      if (item.isDangerous) {
         customStyle = OverlayMenuItemStyle(
           backgroundColor: dangerColor.withOpacity(0.05),
           hoverColor: dangerColor.withOpacity(0.1),

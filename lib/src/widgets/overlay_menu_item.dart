@@ -117,22 +117,19 @@ class OverlayMenuItem<T> extends OverlayMenuEntry {
   Widget build(BuildContext context) {
     final effectiveStyle = _resolveStyle(context);
 
-    Widget content = Container(
-      height: effectiveStyle.height,
-      padding: effectiveStyle.padding,
-      child: Row(
-        children: [
-          if (leading != null) ...[
-            leading!,
-            SizedBox(width: effectiveStyle.leadingGap),
-          ],
-          Expanded(child: child),
-          if (trailing != null) ...[
-            SizedBox(width: effectiveStyle.trailingGap),
-            trailing!,
-          ],
+    // Build the content (Row with leading/child/trailing)
+    Widget content = Row(
+      children: [
+        if (leading != null) ...[
+          leading!,
+          SizedBox(width: effectiveStyle.leadingGap),
         ],
-      ),
+        Expanded(child: child),
+        if (trailing != null) ...[
+          SizedBox(width: effectiveStyle.trailingGap),
+          trailing!,
+        ],
+      ],
     );
 
     // Apply IconTheme
@@ -154,42 +151,63 @@ class OverlayMenuItem<T> extends OverlayMenuEntry {
       );
     }
 
+    // Wrap with Padding (inside InkWell so interactions cover padding area)
+    if (effectiveStyle.padding != null) {
+      content = Padding(
+        padding: effectiveStyle.padding!,
+        child: content,
+      );
+    }
+
+    // Add height constraint
+    if (effectiveStyle.height != null) {
+      content = SizedBox(
+        height: effectiveStyle.height,
+        child: content,
+      );
+    }
+
     // Apply opacity for disabled state
     if (!enabled) {
       content = Opacity(opacity: 0.5, child: content);
     }
 
-    // Wrap with InkWell for interactions
-    content = InkWell(
-      onTap: enabled ? _handleTap : null,
-      hoverColor: effectiveStyle.hoverColor,
-      splashColor: effectiveStyle.splashColor,
-      highlightColor: effectiveStyle.highlightColor,
-      borderRadius: effectiveStyle.borderRadius,
-      child: content,
-    );
-
-    // Wrap with Material for elevation (if needed)
-    if ((effectiveStyle.elevation ?? 0.0) > 0.0) {
-      content = Material(
-        color: Colors.transparent,
-        elevation: effectiveStyle.elevation!,
-        shadowColor: effectiveStyle.shadowColor,
-        borderRadius: effectiveStyle.borderRadius,
-        child: content,
+    // Prepare shape for Material and InkWell
+    ShapeBorder? shape;
+    if (effectiveStyle.border != null || effectiveStyle.borderRadius != null) {
+      shape = RoundedRectangleBorder(
+        side: effectiveStyle.border != null 
+            ? (effectiveStyle.border as Border).top // Use border if available
+            : BorderSide.none,
+        borderRadius: effectiveStyle.borderRadius ?? BorderRadius.zero,
       );
     }
 
-    // Wrap with Container for background, border, and margin
-    content = Container(
-      margin: effectiveStyle.margin,
-      decoration: BoxDecoration(
-        color: effectiveStyle.backgroundColor,
-        border: effectiveStyle.border,
-        borderRadius: effectiveStyle.borderRadius,
+    // Wrap with Material for background, elevation, and shape
+    // Material must be outside InkWell for proper ripple clipping
+    content = Material(
+      color: effectiveStyle.backgroundColor ?? Colors.transparent,
+      elevation: effectiveStyle.elevation ?? 0.0,
+      shadowColor: effectiveStyle.shadowColor,
+      shape: shape,
+      type: MaterialType.card,
+      child: InkWell(
+        onTap: enabled ? _handleTap : null,
+        hoverColor: effectiveStyle.hoverColor,
+        splashColor: effectiveStyle.splashColor,
+        highlightColor: effectiveStyle.highlightColor,
+        customBorder: shape,
+        child: content,
       ),
-      child: content,
     );
+
+    // Wrap with Container for margin only
+    if (effectiveStyle.margin != null) {
+      content = Container(
+        margin: effectiveStyle.margin,
+        child: content,
+      );
+    }
 
     return content;
   }

@@ -51,6 +51,17 @@ class CustomizationPanel extends StatelessWidget {
         ),
         const SizedBox(height: 12),
 
+        // Scrollbar Style Panel
+        _buildPanel(
+          title: '📜 Scrollbar Style',
+          icon: Icons.view_day,
+          child: _ScrollbarStyleSection(
+            config: config,
+            onConfigChanged: onConfigChanged,
+          ),
+        ),
+        const SizedBox(height: 12),
+
         // Position & Alignment Panel
         _buildPanel(
           title: '📍 Position & Alignment',
@@ -179,6 +190,16 @@ class _MenuStyleSection extends StatelessWidget {
         ),
         const SizedBox(height: 12),
 
+        // Shadow Color
+        _ColorSetting(
+          label: 'Shadow Color',
+          color: config.shadowColor ?? Colors.black.withOpacity(0.2),
+          onChanged: (color) {
+            onConfigChanged(config.copyWith(shadowColor: color));
+          },
+        ),
+        const SizedBox(height: 12),
+
         // Min Width
         _SliderSetting(
           label: 'Min Width',
@@ -205,6 +226,34 @@ class _MenuStyleSection extends StatelessWidget {
             onConfigChanged(config.copyWith(maxHeight: value));
           },
         ),
+        const SizedBox(height: 12),
+
+        // Menu Padding Vertical
+        _SliderSetting(
+          label: 'Menu Padding (Vertical)',
+          value: config.menuPaddingVertical,
+          min: 0,
+          max: 24,
+          divisions: 24,
+          unit: 'px',
+          onChanged: (value) {
+            onConfigChanged(config.copyWith(menuPaddingVertical: value));
+          },
+        ),
+        const SizedBox(height: 12),
+
+        // Menu Padding Horizontal
+        _SliderSetting(
+          label: 'Menu Padding (Horizontal)',
+          value: config.menuPaddingHorizontal,
+          min: 0,
+          max: 24,
+          divisions: 24,
+          unit: 'px',
+          onChanged: (value) {
+            onConfigChanged(config.copyWith(menuPaddingHorizontal: value));
+          },
+        ),
       ],
     );
   }
@@ -225,42 +274,71 @@ class _ItemStyleSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Get current item style or use defaults
-    final currentItemStyle = config.itemStyle ?? OverlayMenuItemStyle.defaultNormal(context);
-    
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Item Height
         _SliderSetting(
           label: 'Item Height',
-          value: currentItemStyle.height ?? 48.0,
+          value: config.itemHeight,
           min: 32,
-          max: 64,
-          divisions: 32,
+          max: 72,
+          divisions: 40,
           unit: 'px',
           onChanged: (value) {
-            onConfigChanged(config.copyWith(
-              itemStyle: currentItemStyle.copyWith(height: value),
-            ));
+            onConfigChanged(config.copyWith(itemHeight: value));
           },
         ),
         const SizedBox(height: 12),
 
-        // Horizontal Padding
+        // Padding Horizontal
         _SliderSetting(
-          label: 'Horizontal Padding',
-          value: (currentItemStyle.padding as EdgeInsets?)?.horizontal ?? 32.0,
-          min: 8,
+          label: 'Padding (Horizontal)',
+          value: config.itemPaddingHorizontal,
+          min: 0,
           max: 32,
+          divisions: 32,
+          unit: 'px',
+          onChanged: (value) {
+            onConfigChanged(config.copyWith(itemPaddingHorizontal: value));
+          },
+        ),
+        const SizedBox(height: 12),
+
+        // Padding Vertical
+        _SliderSetting(
+          label: 'Padding (Vertical)',
+          value: config.itemPaddingVertical,
+          min: 0,
+          max: 24,
           divisions: 24,
           unit: 'px',
           onChanged: (value) {
-            onConfigChanged(config.copyWith(
-              itemStyle: currentItemStyle.copyWith(
-                padding: EdgeInsets.symmetric(horizontal: value / 2),
-              ),
-            ));
+            onConfigChanged(config.copyWith(itemPaddingVertical: value));
+          },
+        ),
+        const SizedBox(height: 12),
+
+        // Item Margin
+        _SliderSetting(
+          label: 'Item Margin',
+          value: config.itemMargin,
+          min: 0,
+          max: 8,
+          divisions: 16,
+          unit: 'px',
+          onChanged: (value) {
+            onConfigChanged(config.copyWith(itemMargin: value));
+          },
+        ),
+        const SizedBox(height: 12),
+
+        // Background Color
+        _ColorSetting(
+          label: 'Background Color',
+          color: config.itemBackgroundColor ?? Colors.transparent,
+          onChanged: (color) {
+            onConfigChanged(config.copyWith(itemBackgroundColor: color));
           },
         ),
         const SizedBox(height: 12),
@@ -268,29 +346,43 @@ class _ItemStyleSection extends StatelessWidget {
         // Hover Color
         _ColorSetting(
           label: 'Hover Color',
-          color: currentItemStyle.hoverColor ?? Colors.grey.shade200,
+          color: config.itemHoverColor ?? Colors.grey.shade200,
           onChanged: (color) {
-            onConfigChanged(config.copyWith(
-              itemStyle: currentItemStyle.copyWith(hoverColor: color),
-            ));
+            onConfigChanged(config.copyWith(itemHoverColor: color));
+          },
+        ),
+        const SizedBox(height: 12),
+
+        // Splash Color
+        _ColorSetting(
+          label: 'Splash Color',
+          color: config.itemSplashColor ?? Colors.grey.shade300,
+          onChanged: (color) {
+            onConfigChanged(config.copyWith(itemSplashColor: color));
+          },
+        ),
+        const SizedBox(height: 12),
+
+        // Highlight Color
+        _ColorSetting(
+          label: 'Highlight Color',
+          color: config.itemHighlightColor ?? Colors.grey.shade200,
+          onChanged: (color) {
+            onConfigChanged(config.copyWith(itemHighlightColor: color));
           },
         ),
         const SizedBox(height: 12),
 
         // Item Border Radius
         _SliderSetting(
-          label: 'Item Border Radius',
-          value: (currentItemStyle.borderRadius as BorderRadius?)?.topLeft.x ?? 0.0,
+          label: 'Border Radius',
+          value: config.itemBorderRadius,
           min: 0,
           max: 16,
           divisions: 16,
           unit: 'px',
           onChanged: (value) {
-            onConfigChanged(config.copyWith(
-              itemStyle: currentItemStyle.copyWith(
-                borderRadius: BorderRadius.circular(value),
-              ),
-            ));
+            onConfigChanged(config.copyWith(itemBorderRadius: value));
           },
         ),
         const SizedBox(height: 12),
@@ -298,19 +390,13 @@ class _ItemStyleSection extends StatelessWidget {
         // Text Size
         _SliderSetting(
           label: 'Text Size',
-          value: currentItemStyle.textStyle?.fontSize ?? 14.0,
+          value: config.itemTextSize,
           min: 10,
           max: 20,
           divisions: 20,
           unit: 'px',
           onChanged: (value) {
-            onConfigChanged(config.copyWith(
-              itemStyle: currentItemStyle.copyWith(
-                textStyle: (currentItemStyle.textStyle ?? const TextStyle()).copyWith(
-                  fontSize: value,
-                ),
-              ),
-            ));
+            onConfigChanged(config.copyWith(itemTextSize: value));
           },
         ),
         const SizedBox(height: 12),
@@ -318,62 +404,104 @@ class _ItemStyleSection extends StatelessWidget {
         // Icon Size
         _SliderSetting(
           label: 'Icon Size',
-          value: currentItemStyle.iconSize ?? 24.0,
+          value: config.itemIconSize,
           min: 16,
           max: 32,
           divisions: 16,
           unit: 'px',
           onChanged: (value) {
-            onConfigChanged(config.copyWith(
-              itemStyle: currentItemStyle.copyWith(iconSize: value),
-            ));
+            onConfigChanged(config.copyWith(itemIconSize: value));
           },
         ),
         const SizedBox(height: 12),
 
         // Icon Color
-        Row(
-          children: [
-            const Text('Icon Color:', style: TextStyle(fontSize: 13)),
-            const Spacer(),
-            TextButton(
-              onPressed: () {
-                onConfigChanged(config.copyWith(
-                  itemStyle: currentItemStyle.copyWith(
-                    iconColor: Colors.blue,
-                  ),
-                ));
-              },
-              child: const Text('Default'),
-            ),
-          ],
-        ),
-        const SizedBox(height: 4),
         _ColorSetting(
-          label: '',
-          color: currentItemStyle.iconColor ?? Colors.grey.shade700,
+          label: 'Icon Color',
+          color: config.itemIconColor ?? Colors.grey.shade700,
           onChanged: (color) {
-            onConfigChanged(config.copyWith(
-              itemStyle: currentItemStyle.copyWith(iconColor: color),
-            ));
+            onConfigChanged(config.copyWith(itemIconColor: color));
           },
         ),
         const SizedBox(height: 12),
 
-        // Reset Button
-        Center(
-          child: TextButton.icon(
-            onPressed: () {
-              onConfigChanged(config.copyWith(
-                itemStyle: OverlayMenuItemStyle.defaultNormal(context),
-              ));
-            },
-            icon: const Icon(Icons.refresh, size: 18),
-            label: const Text('Reset to Default'),
-            style: TextButton.styleFrom(
-              foregroundColor: Colors.orange,
-            ),
+        // Leading Gap
+        _SliderSetting(
+          label: 'Leading Gap',
+          value: config.itemLeadingGap,
+          min: 0,
+          max: 24,
+          divisions: 24,
+          unit: 'px',
+          onChanged: (value) {
+            onConfigChanged(config.copyWith(itemLeadingGap: value));
+          },
+        ),
+        const SizedBox(height: 12),
+
+        // Trailing Gap
+        _SliderSetting(
+          label: 'Trailing Gap',
+          value: config.itemTrailingGap,
+          min: 0,
+          max: 24,
+          divisions: 24,
+          unit: 'px',
+          onChanged: (value) {
+            onConfigChanged(config.copyWith(itemTrailingGap: value));
+          },
+        ),
+        const SizedBox(height: 16),
+
+        // Selected Item Section Header
+        const Divider(),
+        const SizedBox(height: 8),
+        const Text(
+          'Selected Item Style',
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
           ),
+        ),
+        const SizedBox(height: 12),
+
+        // Selected Background Color
+        _ColorSetting(
+          label: 'Selected Background',
+          color: config.selectedItemBackgroundColor ?? Theme.of(context).colorScheme.primary.withOpacity(0.08),
+          onChanged: (color) {
+            onConfigChanged(config.copyWith(selectedItemBackgroundColor: color));
+          },
+        ),
+        const SizedBox(height: 12),
+
+        // Selected Hover Color
+        _ColorSetting(
+          label: 'Selected Hover',
+          color: config.selectedItemHoverColor ?? Theme.of(context).colorScheme.primary.withOpacity(0.12),
+          onChanged: (color) {
+            onConfigChanged(config.copyWith(selectedItemHoverColor: color));
+          },
+        ),
+        const SizedBox(height: 12),
+
+        // Selected Text Color
+        _ColorSetting(
+          label: 'Selected Text Color',
+          color: config.selectedItemTextColor ?? Theme.of(context).colorScheme.primary,
+          onChanged: (color) {
+            onConfigChanged(config.copyWith(selectedItemTextColor: color));
+          },
+        ),
+        const SizedBox(height: 12),
+
+        // Selected Icon Color
+        _ColorSetting(
+          label: 'Selected Icon Color',
+          color: config.selectedItemIconColor ?? Theme.of(context).colorScheme.primary,
+          onChanged: (color) {
+            onConfigChanged(config.copyWith(selectedItemIconColor: color));
+          },
         ),
       ],
     );
@@ -491,6 +619,121 @@ class _DividerStyleSection extends StatelessWidget {
               foregroundColor: Colors.orange,
             ),
           ),
+        ),
+      ],
+    );
+  }
+}
+
+// ============================================================================
+// Scrollbar Style Section
+// ============================================================================
+
+class _ScrollbarStyleSection extends StatelessWidget {
+  final DemoConfiguration config;
+  final Function(DemoConfiguration) onConfigChanged;
+
+  const _ScrollbarStyleSection({
+    required this.config,
+    required this.onConfigChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Always Visible Toggle
+        SwitchListTile(
+          title: const Text('Always Visible', style: TextStyle(fontSize: 13)),
+          subtitle: const Text('Show scrollbar even when not scrolling', style: TextStyle(fontSize: 11)),
+          value: config.scrollbarAlwaysVisible,
+          onChanged: (value) {
+            onConfigChanged(config.copyWith(scrollbarAlwaysVisible: value));
+          },
+          contentPadding: EdgeInsets.zero,
+          dense: true,
+        ),
+        const SizedBox(height: 12),
+
+        // Thickness
+        _SliderSetting(
+          label: 'Thickness',
+          value: config.scrollbarThickness,
+          min: 2,
+          max: 12,
+          divisions: 10,
+          unit: 'px',
+          onChanged: (value) {
+            onConfigChanged(config.copyWith(scrollbarThickness: value));
+          },
+        ),
+        const SizedBox(height: 12),
+
+        // Color
+        _ColorSetting(
+          label: 'Thumb Color',
+          color: config.scrollbarColor,
+          onChanged: (color) {
+            onConfigChanged(config.copyWith(scrollbarColor: color));
+          },
+        ),
+        const SizedBox(height: 12),
+
+        // Thumb Radius
+        _SliderSetting(
+          label: 'Thumb Radius',
+          value: config.scrollbarRadius,
+          min: 0,
+          max: 10,
+          divisions: 20,
+          unit: 'px',
+          onChanged: (value) {
+            onConfigChanged(config.copyWith(scrollbarRadius: value));
+          },
+        ),
+        const SizedBox(height: 16),
+
+        // Track Section
+        const Text(
+          'Track Style',
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        const SizedBox(height: 8),
+
+        // Track Visible Toggle
+        SwitchListTile(
+          title: const Text('Show Track', style: TextStyle(fontSize: 13)),
+          subtitle: const Text('Display scrollbar track background', style: TextStyle(fontSize: 11)),
+          value: config.scrollbarTrackVisible,
+          onChanged: (value) {
+            onConfigChanged(config.copyWith(scrollbarTrackVisible: value));
+          },
+          contentPadding: EdgeInsets.zero,
+          dense: true,
+        ),
+        const SizedBox(height: 12),
+
+        // Track Color
+        _ColorSetting(
+          label: 'Track Color',
+          color: config.scrollbarTrackColor ?? Colors.grey.shade200,
+          onChanged: (color) {
+            onConfigChanged(config.copyWith(scrollbarTrackColor: color));
+          },
+        ),
+        const SizedBox(height: 12),
+
+        // Track Border Color
+        _ColorSetting(
+          label: 'Track Border Color',
+          color: config.scrollbarTrackBorderColor ?? Colors.grey.shade400,
+          onChanged: (color) {
+            onConfigChanged(config.copyWith(scrollbarTrackBorderColor: color));
+          },
         ),
       ],
     );

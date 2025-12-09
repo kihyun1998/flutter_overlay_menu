@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'models/demo_configuration.dart';
+
 import 'constants/presets.dart';
+import 'models/demo_configuration.dart';
+import 'widgets/customization_panel.dart';
 import 'widgets/demo_button.dart';
 import 'widgets/preset_buttons.dart';
-import 'widgets/customization_panel.dart';
 
 void main() {
   runApp(const MyApp());
@@ -112,8 +113,7 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
                             onItemSelected: _handleItemSelected,
                           ),
                           const SizedBox(height: 40),
-                          if (_lastSelectedItem != null)
-                            _buildResultCard(),
+                          if (_lastSelectedItem != null) _buildResultCard(),
                         ],
                       ),
                     ),
@@ -161,10 +161,8 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
                     const SizedBox(height: 24),
 
                     // Result card
-                    if (_lastSelectedItem != null)
-                      _buildResultCard(),
-                    if (_lastSelectedItem != null)
-                      const SizedBox(height: 24),
+                    if (_lastSelectedItem != null) _buildResultCard(),
+                    if (_lastSelectedItem != null) const SizedBox(height: 24),
 
                     // Presets
                     PresetButtons(
