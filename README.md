@@ -1,32 +1,21 @@
 # Flutter Overlay Menu
 
-A highly customizable overlay menu package for Flutter. Provides `showOverlayMenu()` function to display animated menus with smart positioning and Material Design styling.
-
-[![pub package](https://img.shields.io/pub/v/flutter_overlay_menu.svg)](https://pub.dev/packages/flutter_overlay_menu)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+A customizable overlay menu package inspired by Flutter's standard patterns (`showDialog`, `showMenu`).
 
 ## Features
 
-- 📱 **Flutter Standard Pattern**: Function-based API like `showDialog()` and `showMenu()`
-- 🎨 **Rich Animations**: Customizable scale and fade animations
-- 📍 **Smart Positioning**: Automatic direction selection based on available screen space
-- 🎯 **Flexible Alignment**: Start, center, or end horizontal alignment
-- 🔧 **Fully Customizable**: Control size, style, animation, and behavior
-- 💎 **Material Design**: Built-in Material Design styling with theme support
+- 📍 **Smart Positioning** - Auto-detects best position (above/below)
+- 🎨 **Fully Customizable** - Control every aspect: colors, sizes, animations
+- 🎯 **Selected State** - Built-in support for selected items
+- 📜 **Scrollbar Support** - Customizable scrollbar when content overflows
+- ⚡ **Smooth Animations** - Scale + fade transitions with custom curves
+- 🎭 **Material Design** - Follows Material Design guidelines
 
 ## Installation
-
-Add to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
   flutter_overlay_menu: ^0.1.0
-```
-
-Then run:
-
-```bash
-flutter pub get
 ```
 
 ## Quick Start
@@ -34,8 +23,10 @@ flutter pub get
 ```dart
 import 'package:flutter_overlay_menu/flutter_overlay_menu.dart';
 
+// 1. Create a GlobalKey for your button
 final buttonKey = GlobalKey();
 
+// 2. Show menu on button tap
 ElevatedButton(
   key: buttonKey,
   onPressed: () async {
@@ -50,249 +41,311 @@ ElevatedButton(
       ),
     );
     
-    if (result == 'edit') handleEdit();
+    if (result == 'edit') {
+      // Handle edit
+    }
   },
   child: Text('Show Menu'),
 )
 ```
 
-## Usage
+## Basic Usage
 
-### Basic Dropdown Menu
-
-```dart
-final key = GlobalKey();
-
-TextButton(
-  key: key,
-  onPressed: () async {
-    final result = await showOverlayMenu<String>(
-      context: context,
-      anchorKey: key,
-      builder: (context) => OverlayMenu(
-        items: [
-          OverlayMenuItem(value: 'Apple', child: Text('🍎 Apple')),
-          OverlayMenuItem(value: 'Banana', child: Text('🍌 Banana')),
-          OverlayMenuItem(value: 'Orange', child: Text('🍊 Orange')),
-        ],
-      ),
-    );
-    
-    print('Selected: $result');
-  },
-  child: Text('Select a fruit'),
-)
-```
-
-### Menu with Icons and Actions
+### Simple Menu
 
 ```dart
-IconButton(
-  key: iconKey,
-  icon: Icon(Icons.more_vert),
-  onPressed: () {
-    showOverlayMenu(
-      context: context,
-      anchorKey: iconKey,
-      alignment: MenuAlignment.end,  // Right-align menu
-      builder: (context) => OverlayMenu(
-        items: [
-          OverlayMenuItem(
-            leading: Icon(Icons.edit),
-            trailing: Text('Ctrl+E'),
-            child: Text('Edit'),
-            onTap: () {
-              handleEdit();
-              Navigator.pop(context);
-            },
-          ),
-          OverlayMenuItem(
-            leading: Icon(Icons.share),
-            child: Text('Share'),
-            onTap: () {
-              handleShare();
-              Navigator.pop(context);
-            },
-          ),
-          OverlayMenuDivider(),
-          OverlayMenuItem(
-            leading: Icon(Icons.delete, color: Colors.red),
-            child: Text('Delete', style: TextStyle(color: Colors.red)),
-            onTap: () {
-              handleDelete();
-              Navigator.pop(context);
-            },
-          ),
-        ],
-      ),
-    );
-  },
-)
-```
-
-### Custom Styling
-
-```dart
-showOverlayMenu(
+showOverlayMenu<String>(
   context: context,
   anchorKey: buttonKey,
-  transitionDuration: Duration(milliseconds: 300),
-  transitionCurve: Curves.elasticOut,
-  style: OverlayMenuStyle(
-    minWidth: 200,
-    backgroundColor: Colors.grey[900],
-    elevation: 12,
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(16),
-    ),
-  ),
   builder: (context) => OverlayMenu(
     items: [
-      OverlayMenuItem(
-        child: Text('Item 1', style: TextStyle(color: Colors.white)),
-      ),
-      OverlayMenuItem(
-        child: Text('Item 2', style: TextStyle(color: Colors.white)),
-      ),
+      OverlayMenuItem(value: 'copy', child: Text('Copy')),
+      OverlayMenuItem(value: 'paste', child: Text('Paste')),
+      OverlayMenuDivider(),
+      OverlayMenuItem(value: 'delete', child: Text('Delete')),
     ],
   ),
 )
 ```
 
+### Menu with Icons
+
+```dart
+OverlayMenu(
+  items: [
+    OverlayMenuItem(
+      value: 'edit',
+      leading: Icon(Icons.edit),
+      trailing: Text('Ctrl+E'),
+      child: Text('Edit'),
+    ),
+    OverlayMenuItem(
+      value: 'share',
+      leading: Icon(Icons.share),
+      child: Text('Share'),
+    ),
+  ],
+)
+```
+
+### Menu with Selection
+
+```dart
+OverlayMenu(
+  items: [
+    OverlayMenuItem(
+      value: 'small',
+      selected: currentSize == 'small',
+      child: Text('Small'),
+    ),
+    OverlayMenuItem(
+      value: 'medium',
+      selected: currentSize == 'medium',
+      child: Text('Medium'),
+    ),
+    OverlayMenuItem(
+      value: 'large',
+      selected: currentSize == 'large',
+      child: Text('Large'),
+    ),
+  ],
+)
+```
+
+### Custom Tap Handler
+
+If you need custom behavior instead of returning a value:
+
+```dart
+OverlayMenuItem(
+  leading: Icon(Icons.settings),
+  child: Text('Settings'),
+  onTap: () {
+    openSettings();
+    Navigator.pop(context);  // Manual close
+  },
+)
+```
+
+## Customization
+
+### Menu Style
+
+```dart
+showOverlayMenu(
+  context: context,
+  anchorKey: buttonKey,
+  style: OverlayMenuStyle(
+    backgroundColor: Colors.grey[900],
+    elevation: 12,
+    borderRadius: BorderRadius.circular(16),
+    padding: EdgeInsets.symmetric(vertical: 8),
+    minWidth: 200,
+    maxHeight: 400,
+  ),
+  builder: (context) => OverlayMenu(...),
+)
+```
+
+### Item Style
+
+```dart
+OverlayMenuStyle(
+  itemStyle: OverlayMenuItemStyle(
+    height: 48,
+    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+    backgroundColor: Colors.transparent,
+    hoverColor: Colors.blue.withOpacity(0.1),
+    borderRadius: BorderRadius.circular(8),
+    textStyle: TextStyle(fontSize: 14),
+    iconColor: Colors.grey,
+  ),
+  selectedItemStyle: OverlayMenuItemStyle(
+    backgroundColor: Colors.blue.withOpacity(0.1),
+    textStyle: TextStyle(
+      color: Colors.blue,
+      fontWeight: FontWeight.w600,
+    ),
+    iconColor: Colors.blue,
+  ),
+)
+```
+
+### Divider Style
+
+```dart
+OverlayMenuStyle(
+  dividerStyle: OverlayMenuDividerStyle(
+    height: 16,
+    thickness: 1,
+    color: Colors.grey,
+    indent: 16,
+    endIndent: 16,
+  ),
+)
+```
+
+### Scrollbar Style
+
+```dart
+OverlayMenuStyle(
+  scrollbarTheme: ScrollbarThemeData(
+    thumbVisibility: WidgetStateProperty.all(true),
+    thickness: WidgetStateProperty.all(6),
+    thumbColor: WidgetStateProperty.all(Colors.grey),
+    radius: Radius.circular(3),
+  ),
+)
+```
+
+## Positioning & Alignment
+
 ### Position Preference
 
 ```dart
-// Always show below
 showOverlayMenu(
-  positionPreference: PositionPreference.below,
-  ...
-)
-
-// Always show above
-showOverlayMenu(
-  positionPreference: PositionPreference.above,
-  ...
-)
-
-// Auto (default) - chooses best position
-showOverlayMenu(
-  positionPreference: PositionPreference.auto,
+  positionPreference: PositionPreference.below,  // Always below
+  // PositionPreference.above   // Always above
+  // PositionPreference.auto    // Auto (default)
   ...
 )
 ```
 
-### Different Alignments
+### Horizontal Alignment
 
 ```dart
-// Left-align menu (default)
 showOverlayMenu(
-  alignment: MenuAlignment.start,
-  ...
-)
-
-// Center menu over button
-showOverlayMenu(
-  alignment: MenuAlignment.center,
-  ...
-)
-
-// Right-align menu
-showOverlayMenu(
-  alignment: MenuAlignment.end,
+  alignment: MenuAlignment.end,  // Right-align
+  // MenuAlignment.start   // Left-align (default)
+  // MenuAlignment.center  // Center-align
   ...
 )
 ```
+
+### Custom Offset
+
+```dart
+showOverlayMenu(
+  offset: Offset(10, 5),  // Additional offset
+  buttonGap: 8,           // Gap between button and menu
+  screenMargin: 16,       // Margin from screen edges
+  ...
+)
+```
+
+## Animations
+
+```dart
+showOverlayMenu(
+  transitionDuration: Duration(milliseconds: 300),
+  transitionCurve: Curves.elasticOut,
+  ...
+)
+```
+
+Available curves: `easeOutCubic`, `elasticOut`, `bounceOut`, `fastOutSlowIn`, etc.
 
 ## API Reference
 
-### showOverlayMenu<T>()
+### showOverlayMenu()
 
-Main function to display an overlay menu.
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `context` | `BuildContext` | required | Build context |
+| `anchorKey` | `GlobalKey` | required | Key of anchor widget |
+| `builder` | `WidgetBuilder` | required | Menu builder function |
+| `positionPreference` | `PositionPreference` | `auto` | Position preference |
+| `alignment` | `MenuAlignment` | `start` | Horizontal alignment |
+| `offset` | `Offset` | `Offset.zero` | Additional offset |
+| `buttonGap` | `double` | `4.0` | Gap from anchor |
+| `screenMargin` | `double` | `8.0` | Screen edge margin |
+| `transitionDuration` | `Duration` | `200ms` | Animation duration |
+| `transitionCurve` | `Curve` | `easeOutCubic` | Animation curve |
+| `style` | `OverlayMenuStyle?` | `null` | Menu style |
+| `barrierDismissible` | `bool` | `true` | Tap outside to close |
+| `barrierColor` | `Color` | `transparent` | Barrier color |
 
-**Parameters:**
-- `context` (`BuildContext`, required): Build context
-- `anchorKey` (`GlobalKey`, required): Key of the anchor widget
-- `builder` (`WidgetBuilder`, required): Builder function returning the menu widget
-- `positionPreference` (`PositionPreference`): auto, below, or above (default: auto)
-- `alignment` (`MenuAlignment`): start, center, or end (default: start)
-- `offset` (`Offset`): Additional offset (default: Offset.zero)
-- `buttonGap` (`double`): Gap between anchor and menu (default: 4.0)
-- `screenMargin` (`double`): Margin from screen edges (default: 8.0)
-- `transitionDuration` (`Duration`): Animation duration (default: 200ms)
-- `transitionCurve` (`Curve`): Animation curve (default: Curves.easeOutCubic)
-- `style` (`OverlayMenuStyle?`): Menu style configuration
-- `barrierDismissible` (`bool`): Close menu on outside tap (default: true)
-- `barrierColor` (`Color`): Barrier overlay color (default: Colors.transparent)
-- `onOpen` (`VoidCallback?`): Called when menu finishes opening
-- `onClose` (`VoidCallback?`): Called when menu starts closing
+### OverlayMenuItem
 
-**Returns:**
-- `Future<T?>`: Completes with selected value or null
-
-### OverlayMenu
-
-Widget to display menu content.
-
-**Properties:**
-- `items` (`List<OverlayMenuEntry>`): List of menu items
-- `onItemSelected` (`Function(T)?`): Called when item with value is selected
-- `style` (`OverlayMenuStyle?`): Menu style
-
-### OverlayMenuItem<T>
-
-Individual menu item widget.
-
-**Properties:**
-- `value` (`T?`): Value to return when selected
-- `child` (`Widget`): Primary content
-- `leading` (`Widget?`): Widget before child (typically Icon)
-- `trailing` (`Widget?`): Widget after child
-- `onTap` (`VoidCallback?`): Custom tap handler
-- `enabled` (`bool`): Whether item is enabled (default: true)
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `value` | `T?` | Value to return when selected |
+| `child` | `Widget` | Main content |
+| `leading` | `Widget?` | Leading widget (icon) |
+| `trailing` | `Widget?` | Trailing widget (shortcut) |
+| `selected` | `bool` | Whether item is selected |
+| `enabled` | `bool` | Whether item is enabled |
+| `onTap` | `VoidCallback?` | Custom tap handler |
+| `itemStyle` | `OverlayMenuItemStyle?` | Custom item style |
 
 **Behavior:**
-- If `onTap` is provided: executes `onTap` (menu doesn't auto-close)
-- If `onTap` is null and `value` is provided: returns `value` and auto-closes menu
+- If `onTap` is null and `value` exists → returns value and closes menu
+- If `onTap` is provided → executes `onTap` (doesn't auto-close)
 
-### OverlayMenuStyle
+### OverlayMenuStyle Properties
 
-Style configuration for overlay menus.
+**Size:**
+- `width`, `minWidth`, `maxWidth` - Width constraints
+- `maxHeight` - Maximum height (enables scrolling)
 
-**Properties:**
-- `width`, `minWidth`, `maxWidth`: Width constraints
-- `maxHeight`: Maximum height (default: 300.0)
-- `backgroundColor`: Background color
-- `elevation`: Shadow elevation (default: 8.0)
-- `shadowColor`: Shadow color
-- `shape`: Border shape
-- `padding`: Internal padding
-- `scrollbarTheme`: Scrollbar theme (Phase 2+)
+**Appearance:**
+- `backgroundColor` - Menu background color
+- `elevation` - Shadow elevation
+- `shadowColor` - Shadow color
+- `borderRadius` - Corner radius
+- `border` - Border style
+- `padding` - Internal padding
 
-## Example
+**Sub-styles:**
+- `itemStyle` - Default item style
+- `selectedItemStyle` - Selected item style
+- `dividerStyle` - Divider style
+- `scrollbarTheme` - Scrollbar theme
 
-Check out the [example](example/) directory for a complete demo app with 5 different examples:
+### OverlayMenuItemStyle Properties
 
-1. Basic dropdown menu
-2. Icon menu with actions
-3. Custom styling with dark theme
-4. Different alignment options
-5. Position preference options
+**Layout:**
+- `height` - Item height
+- `padding` - Internal padding
+- `margin` - External margin
 
-To run the example:
+**Colors:**
+- `backgroundColor` - Background color
+- `hoverColor` - Hover color
+- `splashColor` - Splash color
+- `highlightColor` - Highlight color
+
+**Border:**
+- `border` - Border
+- `borderRadius` - Corner radius
+
+**Content:**
+- `textStyle` - Text style
+- `iconColor` - Icon color
+- `iconSize` - Icon size
+- `leadingGap` - Gap after leading widget
+- `trailingGap` - Gap before trailing widget
+
+**Effects:**
+- `elevation` - Shadow elevation
+- `shadowColor` - Shadow color
+
+## Example App
+
+Run the example to see all features in action:
 
 ```bash
 cd example
 flutter run
 ```
 
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
+The example includes:
+- Basic menus
+- Styled items
+- Selected states
+- Custom animations
+- Different positions and alignments
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Changelog
-
-See [CHANGELOG.md](CHANGELOG.md) for a detailed list of changes and version history.
+MIT License - see [LICENSE](LICENSE) file for details.
