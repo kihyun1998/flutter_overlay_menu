@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import '../models/demo_configuration.dart';
+
 import '../constants/presets.dart';
+import '../models/demo_configuration.dart';
 
 /// Quick preset buttons for changing configuration
 class PresetButtons extends StatelessWidget {
@@ -8,10 +9,10 @@ class PresetButtons extends StatelessWidget {
   final Function(String name, DemoConfiguration config) onPresetSelected;
 
   const PresetButtons({
-    Key? key,
+    super.key,
     this.selectedPreset,
     required this.onPresetSelected,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

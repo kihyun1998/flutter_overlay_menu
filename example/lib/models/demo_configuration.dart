@@ -311,10 +311,12 @@ class DemoConfiguration {
       ),
       margin: EdgeInsets.all(itemMargin),
       backgroundColor:
-          selectedItemBackgroundColor ?? primaryColor.withOpacity(0.08),
-      hoverColor: selectedItemHoverColor ?? primaryColor.withOpacity(0.12),
-      splashColor: itemSplashColor ?? primaryColor.withOpacity(0.16),
-      highlightColor: itemHighlightColor ?? primaryColor.withOpacity(0.12),
+          selectedItemBackgroundColor ?? primaryColor.withValues(alpha: 0.08),
+      hoverColor:
+          selectedItemHoverColor ?? primaryColor.withValues(alpha: 0.12),
+      splashColor: itemSplashColor ?? primaryColor.withValues(alpha: 0.16),
+      highlightColor:
+          itemHighlightColor ?? primaryColor.withValues(alpha: 0.12),
       borderRadius: BorderRadius.circular(itemBorderRadius),
       textStyle: TextStyle(
         fontSize: itemTextSize,

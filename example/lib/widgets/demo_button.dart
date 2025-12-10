@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_overlay_menu/flutter_overlay_menu.dart';
+
 import '../models/demo_configuration.dart';
 
 /// Main demo button that shows the overlay menu with current configuration
@@ -8,10 +9,10 @@ class DemoButton extends StatelessWidget {
   final Function(String) onItemSelected;
 
   const DemoButton({
-    Key? key,
+    super.key,
     required this.config,
     required this.onItemSelected,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +27,7 @@ class DemoButton extends StatelessWidget {
             gradient: LinearGradient(
               colors: [
                 Theme.of(context).primaryColor,
-                Theme.of(context).primaryColor.withOpacity(0.7),
+                Theme.of(context).primaryColor.withValues(alpha: 0.7),
               ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
@@ -34,7 +35,7 @@ class DemoButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(
-                color: Theme.of(context).primaryColor.withOpacity(0.3),
+                color: Theme.of(context).primaryColor.withValues(alpha: 0.3),
                 blurRadius: 12,
                 offset: const Offset(0, 6),
               ),
@@ -73,7 +74,7 @@ class DemoButton extends StatelessWidget {
                       'Tap to test current settings',
                       style: TextStyle(
                         fontSize: 14,
-                        color: Colors.white.withOpacity(0.9),
+                        color: Colors.white.withValues(alpha: 0.9),
                       ),
                     ),
                   ],
@@ -160,10 +161,10 @@ class DemoButton extends StatelessWidget {
       OverlayMenuItemStyle? customStyle;
       if (item.isDangerous) {
         customStyle = OverlayMenuItemStyle(
-          backgroundColor: dangerColor.withOpacity(0.05),
-          hoverColor: dangerColor.withOpacity(0.1),
-          splashColor: dangerColor.withOpacity(0.2),
-          border: Border.all(color: dangerColor.withOpacity(0.3)),
+          backgroundColor: dangerColor.withValues(alpha: 0.05),
+          hoverColor: dangerColor.withValues(alpha: 0.1),
+          splashColor: dangerColor.withValues(alpha: 0.2),
+          border: Border.all(color: dangerColor.withValues(alpha: 0.3)),
           borderRadius: BorderRadius.circular(8),
           margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
           padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -187,7 +188,7 @@ class DemoButton extends StatelessWidget {
                   item.trailingText!,
                   style: TextStyle(
                     fontSize: 12,
-                    color: textColor.withOpacity(0.6),
+                    color: textColor.withValues(alpha: 0.6),
                   ),
                 )
               : null,

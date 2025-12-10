@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../models/menu_item_style.dart';
 import '../models/menu_style.dart';
 import 'overlay_menu_entry.dart';
@@ -49,7 +50,7 @@ import 'overlay_menu_entry.dart';
 class OverlayMenuItem<T> extends OverlayMenuEntry {
   /// Creates a menu item.
   const OverlayMenuItem({
-    Key? key,
+    super.key,
     this.value,
     required this.child,
     this.leading,
@@ -60,7 +61,7 @@ class OverlayMenuItem<T> extends OverlayMenuEntry {
     this.itemStyle,
     this.onItemTap, // Internal callback for closing menu
     this.menuStyle, // Internal: menu-level style
-  }) : super(key: key);
+  });
 
   /// The value to return when this item is selected.
   ///

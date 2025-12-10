@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+
 import '../models/menu_style.dart';
+import 'overlay_menu_divider.dart';
 import 'overlay_menu_entry.dart';
 import 'overlay_menu_item.dart';
-import 'overlay_menu_divider.dart';
 
 /// A widget that displays a menu with a list of items.
 ///
@@ -26,12 +27,11 @@ import 'overlay_menu_divider.dart';
 class OverlayMenu<T> extends StatelessWidget {
   /// Creates an overlay menu with a list of items.
   const OverlayMenu({
-    Key? key,
+    super.key,
     required this.items,
     this.onItemSelected,
     this.style,
-  })  : child = null,
-        super(key: key);
+  }) : child = null;
 
   /// Creates an overlay menu with custom content.
   ///
@@ -49,12 +49,11 @@ class OverlayMenu<T> extends StatelessWidget {
   /// )
   /// ```
   const OverlayMenu.custom({
-    Key? key,
+    super.key,
     required Widget this.child,
     this.style,
   })  : items = const [],
-        onItemSelected = null,
-        super(key: key);
+        onItemSelected = null;
 
   /// The list of menu entries to display.
   final List<OverlayMenuEntry> items;
@@ -172,8 +171,8 @@ class OverlayMenu<T> extends StatelessWidget {
         child: ScrollbarTheme(
           data: effectiveStyle.scrollbarTheme ??
               ScrollbarThemeData(
-                thumbVisibility: MaterialStateProperty.all(false),
-                thickness: MaterialStateProperty.all(6.0),
+                thumbVisibility: WidgetStateProperty.all(false),
+                thickness: WidgetStateProperty.all(6.0),
                 radius: const Radius.circular(3.0),
               ),
           child: _ScrollableContent(child: content),

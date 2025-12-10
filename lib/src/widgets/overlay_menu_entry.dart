@@ -8,5 +8,5 @@ import 'package:flutter/widgets.dart';
 /// All menu entries must extend this class to be used in [OverlayMenu].
 abstract class OverlayMenuEntry extends StatelessWidget {
   /// Creates an overlay menu entry.
-  const OverlayMenuEntry({Key? key}) : super(key: key);
+  const OverlayMenuEntry({super.key});
 }

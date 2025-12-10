@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_overlay_menu/flutter_overlay_menu.dart';
-import '../models/demo_configuration.dart';
+
 import '../constants/presets.dart';
+import '../models/demo_configuration.dart';
 
 /// Customization panel for all overlay menu settings
 class CustomizationPanel extends StatelessWidget {
@@ -9,10 +10,10 @@ class CustomizationPanel extends StatelessWidget {
   final Function(DemoConfiguration) onConfigChanged;
 
   const CustomizationPanel({
-    Key? key,
+    super.key,
     required this.config,
     required this.onConfigChanged,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -193,7 +194,7 @@ class _MenuStyleSection extends StatelessWidget {
         // Shadow Color
         _ColorSetting(
           label: 'Shadow Color',
-          color: config.shadowColor ?? Colors.black.withOpacity(0.2),
+          color: config.shadowColor ?? Colors.black.withValues(alpha: 0.2),
           onChanged: (color) {
             onConfigChanged(config.copyWith(shadowColor: color));
           },
@@ -469,7 +470,7 @@ class _ItemStyleSection extends StatelessWidget {
         _ColorSetting(
           label: 'Selected Background',
           color: config.selectedItemBackgroundColor ??
-              Theme.of(context).colorScheme.primary.withOpacity(0.08),
+              Theme.of(context).colorScheme.primary.withValues(alpha: 0.08),
           onChanged: (color) {
             onConfigChanged(
                 config.copyWith(selectedItemBackgroundColor: color));
@@ -481,7 +482,7 @@ class _ItemStyleSection extends StatelessWidget {
         _ColorSetting(
           label: 'Selected Hover',
           color: config.selectedItemHoverColor ??
-              Theme.of(context).colorScheme.primary.withOpacity(0.12),
+              Theme.of(context).colorScheme.primary.withValues(alpha: 0.12),
           onChanged: (color) {
             onConfigChanged(config.copyWith(selectedItemHoverColor: color));
           },
@@ -957,7 +958,7 @@ class _MenuItemsSection extends StatelessWidget {
             item: item,
             onToggleDivider: () => _toggleDivider(index),
           );
-        }).toList(),
+        }),
       ],
     );
   }
@@ -1190,7 +1191,7 @@ class _ColorSetting extends StatelessWidget {
           spacing: 8,
           runSpacing: 8,
           children: presetColors.map((presetColor) {
-            final isSelected = color.value == presetColor.value;
+            final isSelected = color.toARGB32() == presetColor.toARGB32();
             return GestureDetector(
               onTap: () => onChanged(presetColor),
               child: Container(
@@ -1205,7 +1206,7 @@ class _ColorSetting extends StatelessWidget {
                   borderRadius: BorderRadius.circular(8),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
+                      color: Colors.black.withValues(alpha: 0.1),
                       blurRadius: 4,
                       offset: const Offset(0, 2),
                     ),

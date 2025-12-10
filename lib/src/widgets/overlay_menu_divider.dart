@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+
 import '../models/menu_divider_style.dart';
-import '../models/menu_style.dart';
 import 'overlay_menu_entry.dart';
 
 /// A divider widget for overlay menus.
@@ -35,10 +35,10 @@ import 'overlay_menu_entry.dart';
 class OverlayMenuDivider extends OverlayMenuEntry {
   /// Creates a menu divider.
   const OverlayMenuDivider({
-    Key? key,
+    super.key,
     this.style,
     this.menuDividerStyle, // Internal: from OverlayMenu
-  }) : super(key: key);
+  });
 
   /// Custom style for this specific divider.
   ///

@@ -43,20 +43,18 @@
 ///   child: Text('Show Menu'),
 /// )
 /// ```
-library flutter_overlay_menu;
+library;
 
 // Functions
 export 'src/functions/show_overlay_menu.dart';
-
-// Widgets
-export 'src/widgets/overlay_menu.dart';
-export 'src/widgets/overlay_menu_item.dart';
-export 'src/widgets/overlay_menu_divider.dart';
-export 'src/widgets/overlay_menu_entry.dart';
-
+export 'src/models/enums.dart';
+export 'src/models/menu_divider_style.dart';
+export 'src/models/menu_item_style.dart';
 // Models
 export 'src/models/menu_style.dart';
-export 'src/models/menu_item_style.dart';
-export 'src/models/menu_divider_style.dart';
-export 'src/models/enums.dart';
+// Widgets
+export 'src/widgets/overlay_menu.dart';
+export 'src/widgets/overlay_menu_divider.dart';
+export 'src/widgets/overlay_menu_entry.dart';
+export 'src/widgets/overlay_menu_item.dart';
 // Note: menu_position.dart is internal only, not exported

@@ -7,13 +7,13 @@ import 'package:flutter/material.dart';
 class AnimatedOverlayMenu extends StatefulWidget {
   /// Creates an animated overlay menu.
   const AnimatedOverlayMenu({
-    Key? key,
+    super.key,
     required this.child,
     required this.transformOrigin,
     required this.duration,
     required this.curve,
     required this.onAnimationComplete,
-  }) : super(key: key);
+  });
 
   /// The menu content to animate.
   final Widget child;
