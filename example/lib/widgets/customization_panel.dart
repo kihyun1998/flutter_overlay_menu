@@ -215,6 +215,20 @@ class _MenuStyleSection extends StatelessWidget {
         ),
         const SizedBox(height: 12),
 
+        // Min Height
+        _SliderSetting(
+          label: 'Min Height (for Empty State)',
+          value: config.minHeight ?? 0,
+          min: 0,
+          max: 200,
+          divisions: 20,
+          unit: 'px',
+          onChanged: (value) {
+            onConfigChanged(config.copyWith(minHeight: value > 0 ? value : null));
+          },
+        ),
+        const SizedBox(height: 12),
+
         // Max Height
         _SliderSetting(
           label: 'Max Height',
@@ -254,6 +268,20 @@ class _MenuStyleSection extends StatelessWidget {
           onChanged: (value) {
             onConfigChanged(config.copyWith(menuPaddingHorizontal: value));
           },
+        ),
+        const SizedBox(height: 12),
+
+        // Add Empty State Helper
+        OutlinedButton.icon(
+          onPressed: () {
+            onConfigChanged(config.copyWith(items: []));
+          },
+          icon: const Icon(Icons.delete_sweep, size: 18),
+          label: const Text('Clear All Items (Test Empty State)'),
+          style: OutlinedButton.styleFrom(
+            foregroundColor: Colors.red,
+            minimumSize: const Size.fromHeight(40),
+          ),
         ),
       ],
     );

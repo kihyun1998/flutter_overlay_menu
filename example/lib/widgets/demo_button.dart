@@ -138,6 +138,16 @@ class DemoButton extends StatelessWidget {
       barrierColor: config.barrierColor,
       builder: (context) => OverlayMenu(
         items: _buildMenuItems(context),
+        emptyWidget: const Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.inbox_outlined, size: 48, color: Colors.grey),
+              SizedBox(height: 8),
+              Text('No items found', style: TextStyle(color: Colors.grey)),
+            ],
+          ),
+        ),
       ),
     );
 

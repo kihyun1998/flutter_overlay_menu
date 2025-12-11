@@ -29,6 +29,7 @@ class OverlayMenu<T> extends StatelessWidget {
   const OverlayMenu({
     super.key,
     required this.items,
+    this.emptyWidget,
     this.onItemSelected,
     this.style,
   }) : child = null;
@@ -53,10 +54,14 @@ class OverlayMenu<T> extends StatelessWidget {
     required Widget this.child,
     this.style,
   })  : items = const [],
+        emptyWidget = null,
         onItemSelected = null;
 
   /// The list of menu entries to display.
   final List<OverlayMenuEntry> items;
+
+  /// A widget to display when [items] is empty.
+  final Widget? emptyWidget;
 
   /// Custom child widget (for custom constructor).
   final Widget? child;
@@ -100,6 +105,33 @@ class OverlayMenu<T> extends StatelessWidget {
     if (child != null) {
       // Custom content
       content = child!;
+    } else if (items.isEmpty && emptyWidget != null) {
+      // Empty state
+      content = Center(child: emptyWidget!);
+
+      // Add padding if specified (same as regular content)
+      if (effectiveStyle.padding != null) {
+        content = Padding(
+          padding: effectiveStyle.padding!,
+          child: content,
+        );
+      }
+      
+      // Allow scrolling if empty widget is large
+       content = ConstrainedBox(
+        constraints: BoxConstraints(
+          maxHeight: effectiveStyle.maxHeight,
+        ),
+        child: ScrollbarTheme(
+          data: effectiveStyle.scrollbarTheme ??
+              ScrollbarThemeData(
+                thumbVisibility: WidgetStateProperty.all(false),
+                thickness: WidgetStateProperty.all(6.0),
+                radius: const Radius.circular(3.0),
+              ),
+          child: _ScrollableContent(child: content),
+        ),
+      );
     } else {
       // Build from items list
       // Inject onItemTap callback and menuStyle into each OverlayMenuItem
@@ -194,6 +226,7 @@ class OverlayMenu<T> extends StatelessWidget {
       constraints: BoxConstraints(
         minWidth: effectiveStyle.minWidth ?? 0,
         maxWidth: effectiveStyle.maxWidth ?? double.infinity,
+        minHeight: effectiveStyle.minHeight ?? 0,
       ),
       child: content,
     );

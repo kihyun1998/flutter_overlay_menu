@@ -47,6 +47,7 @@ class DemoConfiguration {
   final Color? shadowColor;
   final double minWidth;
   final double? maxWidth;
+  final double? minHeight; // Added minHeight for Empty State demo
   final double maxHeight;
   final double menuPaddingVertical;
   final double menuPaddingHorizontal;
@@ -111,6 +112,7 @@ class DemoConfiguration {
     this.shadowColor,
     this.minWidth = 180.0,
     this.maxWidth,
+    this.minHeight, // Default null
     this.maxHeight = 300.0,
     this.menuPaddingVertical = 8.0,
     this.menuPaddingHorizontal = 0.0,
@@ -167,6 +169,7 @@ class DemoConfiguration {
     Color? shadowColor,
     double? minWidth,
     double? maxWidth,
+    double? minHeight,
     double? maxHeight,
     double? menuPaddingVertical,
     double? menuPaddingHorizontal,
@@ -214,6 +217,7 @@ class DemoConfiguration {
       shadowColor: shadowColor ?? this.shadowColor,
       minWidth: minWidth ?? this.minWidth,
       maxWidth: maxWidth ?? this.maxWidth,
+      minHeight: minHeight ?? this.minHeight,
       maxHeight: maxHeight ?? this.maxHeight,
       menuPaddingVertical: menuPaddingVertical ?? this.menuPaddingVertical,
       menuPaddingHorizontal:
@@ -340,6 +344,7 @@ class DemoConfiguration {
       ),
       minWidth: minWidth,
       maxWidth: maxWidth,
+      minHeight: minHeight,
       maxHeight: maxHeight,
       padding: EdgeInsets.symmetric(
         vertical: menuPaddingVertical,

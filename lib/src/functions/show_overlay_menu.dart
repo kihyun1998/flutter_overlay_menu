@@ -74,6 +74,7 @@ Future<T?> showOverlayMenu<T>({
   Color barrierColor = Colors.transparent,
   VoidCallback? onOpen,
   VoidCallback? onClose,
+  Widget? emptyWidget,
 }) {
   // Get RenderBox of the anchor widget
   final renderBox = anchorKey.currentContext?.findRenderObject() as RenderBox?;
@@ -162,6 +163,7 @@ Future<T?> showOverlayMenu<T>({
 
         builtMenuWidget = OverlayMenu(
           items: builtMenuWidget.items,
+          emptyWidget: emptyWidget ?? builtMenuWidget.emptyWidget,
           style: constrainedStyle,
           onItemSelected: (value) {
             originalOnItemSelected?.call(value);

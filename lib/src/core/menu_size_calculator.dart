@@ -58,14 +58,25 @@ class MenuSizeCalculator {
     const double defaultItemHeight = 48.0;
     double totalHeight = 0.0;
 
-    for (final item in items) {
-      if (item is OverlayMenuItem) {
-        totalHeight += defaultItemHeight;
-      } else if (item is OverlayMenuDivider) {
-        totalHeight += item.height;
+    if (items.isEmpty) {
+      // Handle empty state (e.g., using emptyWidget)
+      // If minHeight is provided, use it as baseline
+      if (style?.minHeight != null) {
+        totalHeight = style!.minHeight!;
       } else {
-        // Unknown item type, use default height
-        totalHeight += defaultItemHeight;
+        // Fallback to one default item height
+        totalHeight = defaultItemHeight;
+      }
+    } else {
+      for (final item in items) {
+        if (item is OverlayMenuItem) {
+          totalHeight += defaultItemHeight;
+        } else if (item is OverlayMenuDivider) {
+          totalHeight += item.height;
+        } else {
+          // Unknown item type, use default height
+          totalHeight += defaultItemHeight;
+        }
       }
     }
 
@@ -76,6 +87,12 @@ class MenuSizeCalculator {
       // Since padding is EdgeInsetsGeometry, we resolve it with a default TextDirection
       final resolvedPadding = padding.resolve(TextDirection.ltr);
       totalHeight += resolvedPadding.top + resolvedPadding.bottom;
+    }
+
+    // Apply minHeight constraint
+    // We do this BEFORE maxHeight to ensure minHeight is respected up to maxHeight
+    if (style?.minHeight != null && totalHeight < style!.minHeight!) {
+      totalHeight = style!.minHeight!;
     }
 
     // Apply maxHeight constraint

@@ -25,6 +25,7 @@ class OverlayMenuStyle {
     this.width,
     this.minWidth,
     this.maxWidth,
+    this.minHeight,
     this.maxHeight = 300.0,
     this.backgroundColor,
     this.elevation = 8.0,
@@ -56,6 +57,13 @@ class OverlayMenuStyle {
   /// If the calculated width is greater than this value, it will be
   /// constrained to this maximum.
   final double? maxWidth;
+
+  /// Minimum height for the menu.
+  ///
+  /// If the content height is less than this value, it will be
+  /// expanded to this minimum. This is particularly useful when using
+  /// an emptyWidget to ensure accurate position calculation.
+  final double? minHeight;
 
   /// Maximum height for the menu.
   ///
@@ -130,6 +138,7 @@ class OverlayMenuStyle {
     double? width,
     double? minWidth,
     double? maxWidth,
+    double? minHeight,
     double? maxHeight,
     Color? backgroundColor,
     double? elevation,
@@ -147,6 +156,7 @@ class OverlayMenuStyle {
       width: width ?? this.width,
       minWidth: minWidth ?? this.minWidth,
       maxWidth: maxWidth ?? this.maxWidth,
+      minHeight: minHeight ?? this.minHeight,
       maxHeight: maxHeight ?? this.maxHeight,
       backgroundColor: backgroundColor ?? this.backgroundColor,
       elevation: elevation ?? this.elevation,
@@ -170,6 +180,7 @@ class OverlayMenuStyle {
         other.width == width &&
         other.minWidth == minWidth &&
         other.maxWidth == maxWidth &&
+        other.minHeight == minHeight &&
         other.maxHeight == maxHeight &&
         other.backgroundColor == backgroundColor &&
         other.elevation == elevation &&
@@ -190,6 +201,7 @@ class OverlayMenuStyle {
       width,
       minWidth,
       maxWidth,
+      minHeight,
       maxHeight,
       backgroundColor,
       elevation,
