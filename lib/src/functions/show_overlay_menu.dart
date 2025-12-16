@@ -58,6 +58,8 @@ import '../widgets/overlay_menu.dart';
 /// - [barrierColor]: Color of the barrier overlay
 /// - [onOpen]: Called when the menu finishes opening
 /// - [onClose]: Called when the menu starts closing
+/// - [emptyWidget]: Widget to display when menu items are empty
+/// - [pinnedButton]: Fixed button widget that appears at top/bottom based on menu direction
 Future<T?> showOverlayMenu<T>({
   required BuildContext context,
   required GlobalKey anchorKey,
@@ -75,6 +77,7 @@ Future<T?> showOverlayMenu<T>({
   VoidCallback? onOpen,
   VoidCallback? onClose,
   Widget? emptyWidget,
+  Widget? pinnedButton,
 }) {
   // Get RenderBox of the anchor widget
   final renderBox = anchorKey.currentContext?.findRenderObject() as RenderBox?;
@@ -120,6 +123,7 @@ Future<T?> showOverlayMenu<T>({
       items: menuWidget.items,
       anchorWidth: renderBox.size.width,
       style: style ?? menuWidget.style,
+      hasPinnedButton: pinnedButton != null,
     );
   } else {
     // Custom widget, use default/style size
@@ -164,6 +168,8 @@ Future<T?> showOverlayMenu<T>({
         builtMenuWidget = OverlayMenu(
           items: builtMenuWidget.items,
           emptyWidget: emptyWidget ?? builtMenuWidget.emptyWidget,
+          pinnedButton: pinnedButton,
+          menuDirection: position.direction,
           style: constrainedStyle,
           onItemSelected: (value) {
             originalOnItemSelected?.call(value);

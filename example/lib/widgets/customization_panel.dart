@@ -967,7 +967,7 @@ class _MenuItemsSection extends StatelessWidget {
                 icon: const Icon(Icons.add, size: 18),
                 label: const Text('Add'),
               ),
-            if (config.items.length > 1)
+            if (config.items.isNotEmpty)
               TextButton.icon(
                 onPressed: () => _removeItem(),
                 icon: const Icon(Icons.remove, size: 18),

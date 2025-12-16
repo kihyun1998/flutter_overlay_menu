@@ -104,6 +104,11 @@ class DemoConfiguration {
   final double buttonGap;
   final double screenMargin;
 
+  // Pinned Button
+  final bool showPinnedButton;
+  final double pinnedButtonHeight;
+
+
   const DemoConfiguration({
     // Menu Style
     this.borderRadius = 8.0,
@@ -160,6 +165,9 @@ class DemoConfiguration {
     this.barrierColor = Colors.transparent,
     this.buttonGap = 4.0,
     this.screenMargin = 8.0,
+    // Pinned Button
+    this.showPinnedButton = false,
+    this.pinnedButtonHeight = 52.0,
   });
 
   DemoConfiguration copyWith({
@@ -209,6 +217,8 @@ class DemoConfiguration {
     Color? barrierColor,
     double? buttonGap,
     double? screenMargin,
+    bool? showPinnedButton,
+    double? pinnedButtonHeight,
   }) {
     return DemoConfiguration(
       borderRadius: borderRadius ?? this.borderRadius,
@@ -266,6 +276,8 @@ class DemoConfiguration {
       barrierColor: barrierColor ?? this.barrierColor,
       buttonGap: buttonGap ?? this.buttonGap,
       screenMargin: screenMargin ?? this.screenMargin,
+      showPinnedButton: showPinnedButton ?? this.showPinnedButton,
+      pinnedButtonHeight: pinnedButtonHeight ?? this.pinnedButtonHeight,
     );
   }
 
@@ -366,6 +378,8 @@ class DemoConfiguration {
             : null,
         trackVisibility: WidgetStateProperty.all(scrollbarTrackVisible),
       ),
+      pinnedButtonHeight: showPinnedButton ? pinnedButtonHeight : null,
+      showPinnedButtonDivider: true,
     );
   }
 }

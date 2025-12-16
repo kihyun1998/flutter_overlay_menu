@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../models/enums.dart';
 import '../models/menu_style.dart';
 import 'overlay_menu_divider.dart';
 import 'overlay_menu_entry.dart';
@@ -30,6 +31,8 @@ class OverlayMenu<T> extends StatelessWidget {
     super.key,
     required this.items,
     this.emptyWidget,
+    this.pinnedButton,
+    this.menuDirection,
     this.onItemSelected,
     this.style,
   }) : child = null;
@@ -55,6 +58,8 @@ class OverlayMenu<T> extends StatelessWidget {
     this.style,
   })  : items = const [],
         emptyWidget = null,
+        pinnedButton = null,
+        menuDirection = null,
         onItemSelected = null;
 
   /// The list of menu entries to display.
@@ -62,6 +67,21 @@ class OverlayMenu<T> extends StatelessWidget {
 
   /// A widget to display when [items] is empty.
   final Widget? emptyWidget;
+
+  /// A fixed button widget that appears at the top or bottom of the menu.
+  ///
+  /// Position depends on [menuDirection]:
+  /// - [MenuDirection.below]: Button appears at the top
+  /// - [MenuDirection.above]: Button appears at the bottom
+  ///
+  /// The button's height MUST be specified in [OverlayMenuStyle.pinnedButtonHeight]
+  /// for accurate menu size calculation.
+  final Widget? pinnedButton;
+
+  /// The direction the menu was opened (above or below the anchor).
+  ///
+  /// This determines where the pinned button is positioned.
+  final MenuDirection? menuDirection;
 
   /// Custom child widget (for custom constructor).
   final Widget? child;
@@ -91,12 +111,29 @@ class OverlayMenu<T> extends StatelessWidget {
   Widget build(BuildContext context) {
     final effectiveStyle = style ?? _defaultStyle(context);
 
+    // Validate pinnedButton configuration
+    assert(
+      pinnedButton == null || effectiveStyle.pinnedButtonHeight != null,
+      'pinnedButtonHeight must be specified in OverlayMenuStyle when using pinnedButton.\n'
+      'The height is required for accurate menu size calculation and positioning.\n'
+      'Example: OverlayMenuStyle(pinnedButtonHeight: 52.0)',
+    );
+
     // Extract border radius from shape
     BorderRadius? borderRadius;
     if (effectiveStyle.shape is RoundedRectangleBorder) {
       final shape = effectiveStyle.shape as RoundedRectangleBorder;
       if (shape.borderRadius is BorderRadius) {
         borderRadius = shape.borderRadius as BorderRadius;
+      }
+    }
+
+    // Calculate available height for scrollable items
+    double scrollableMaxHeight = effectiveStyle.maxHeight;
+    if (pinnedButton != null && effectiveStyle.pinnedButtonHeight != null) {
+      scrollableMaxHeight -= effectiveStyle.pinnedButtonHeight!;
+      if (effectiveStyle.showPinnedButtonDivider) {
+        scrollableMaxHeight -= effectiveStyle.dividerStyle?.thickness ?? 1.0;
       }
     }
 
@@ -120,7 +157,7 @@ class OverlayMenu<T> extends StatelessWidget {
       // Allow scrolling if empty widget is large
        content = ConstrainedBox(
         constraints: BoxConstraints(
-          maxHeight: effectiveStyle.maxHeight,
+          maxHeight: scrollableMaxHeight,
         ),
         child: ScrollbarTheme(
           data: effectiveStyle.scrollbarTheme ??
@@ -198,7 +235,7 @@ class OverlayMenu<T> extends StatelessWidget {
       // Make scrollable if needed
       content = ConstrainedBox(
         constraints: BoxConstraints(
-          maxHeight: effectiveStyle.maxHeight,
+          maxHeight: scrollableMaxHeight,
         ),
         child: ScrollbarTheme(
           data: effectiveStyle.scrollbarTheme ??
@@ -217,6 +254,44 @@ class OverlayMenu<T> extends StatelessWidget {
         content = ClipRRect(
           borderRadius: borderRadius,
           child: content,
+        );
+      }
+    }
+
+    // Wrap with pinned button if provided
+    if (pinnedButton != null && menuDirection != null) {
+      final buttonWidget = SizedBox(
+        height: effectiveStyle.pinnedButtonHeight,
+        child: pinnedButton,
+      );
+
+      final divider = effectiveStyle.showPinnedButtonDivider
+          ? OverlayMenuDivider(
+              style: effectiveStyle.dividerStyle,
+            )
+          : const SizedBox.shrink();
+
+      if (menuDirection == MenuDirection.below) {
+        // Menu opens below: button at top
+        content = Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            buttonWidget,
+            divider,
+            Flexible(child: content),
+          ],
+        );
+      } else {
+        // Menu opens above: button at bottom
+        content = Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Flexible(child: content),
+            divider,
+            buttonWidget,
+          ],
         );
       }
     }

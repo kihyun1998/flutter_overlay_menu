@@ -18,19 +18,22 @@ class MenuSizeCalculator {
   ///
   /// The height is calculated by:
   /// 1. Sum up all item heights (48.0 for menu items, custom for dividers)
-  /// 2. Add padding
-  /// 3. Constrain to [style.maxHeight]
+  /// 2. Add pinned button height (if provided)
+  /// 3. Add padding
+  /// 4. Constrain to [style.maxHeight]
   ///
   /// Parameters:
   /// - [items]: List of menu entries to calculate size for
   /// - [anchorWidth]: Width of the anchor widget
   /// - [style]: Style configuration for the menu
+  /// - [hasPinnedButton]: Whether a pinned button is present
   ///
   /// Returns: Estimated [Size] of the menu
   static Size estimateSize({
     required List<OverlayMenuEntry> items,
     required double anchorWidth,
     required OverlayMenuStyle? style,
+    bool hasPinnedButton = false,
   }) {
     // Calculate width
     double width;
@@ -77,6 +80,16 @@ class MenuSizeCalculator {
           // Unknown item type, use default height
           totalHeight += defaultItemHeight;
         }
+      }
+    }
+
+    // Add pinned button height (if provided)
+    if (hasPinnedButton && style?.pinnedButtonHeight != null) {
+      totalHeight += style!.pinnedButtonHeight!;
+      
+      // Add divider height if enabled
+      if (style.showPinnedButtonDivider) {
+        totalHeight += style.dividerStyle?.thickness ?? 1.0;
       }
     }
 

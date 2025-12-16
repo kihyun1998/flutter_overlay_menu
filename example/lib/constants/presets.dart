@@ -215,6 +215,46 @@ class DemoPresets {
         ),
       );
 
+  /// Pinned Button preset - showcasing pinned button feature
+  static DemoConfiguration get pinnedButton => DemoConfiguration(
+        borderRadius: 12.0,
+        elevation: 8.0,
+        backgroundColor: Colors.white,
+        minWidth: 220.0,
+        durationMs: 200,
+        curve: Curves.easeOutCubic,
+        positionPreference: PositionPreference.auto,
+        alignment: MenuAlignment.start,
+        items: [
+          const DemoMenuItem(
+            id: '1',
+            label: 'Edit',
+            leadingIcon: Icons.edit,
+          ),
+          const DemoMenuItem(
+            id: '2',
+            label: 'Share',
+            leadingIcon: Icons.share,
+          ),
+          const DemoMenuItem(
+            id: '3',
+            label: 'Copy Link',
+            leadingIcon: Icons.link,
+          ),
+        ],
+        itemHeight: 44,
+        itemPaddingHorizontal: 16,
+        itemMargin: 0,
+        itemBackgroundColor: Colors.transparent,
+        itemHoverColor: Colors.grey.withValues(alpha: 0.08),
+        itemBorderRadius: 0,
+        itemTextSize: 14,
+        menuPaddingVertical: 0,
+        menuPaddingHorizontal: 0,
+        showPinnedButton: true,
+        pinnedButtonHeight: 52.0,
+      );
+
   /// Get all presets as a map
   static Map<String, DemoConfiguration> get all => {
         'Material': material,
@@ -225,6 +265,7 @@ class DemoPresets {
         'Styled Items': styledItems,
         'Selected Item': selectedItem,
         'Custom Styles': customStyles,
+        'Pinned Button': pinnedButton,
       };
 }
 

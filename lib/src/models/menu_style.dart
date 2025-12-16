@@ -38,6 +38,8 @@ class OverlayMenuStyle {
     this.itemStyle,
     this.selectedItemStyle,
     this.dividerStyle,
+    this.pinnedButtonHeight,
+    this.showPinnedButtonDivider = true,
   });
 
   /// Fixed width for the menu.
@@ -133,6 +135,19 @@ class OverlayMenuStyle {
   /// If null, uses built-in default divider style.
   final OverlayMenuDividerStyle? dividerStyle;
 
+  /// Height of the pinned button.
+  ///
+  /// This value is REQUIRED when using a pinnedButton to ensure accurate
+  /// menu size calculation and positioning. The actual button widget must
+  /// match this height.
+  final double? pinnedButtonHeight;
+
+  /// Whether to show a divider between the pinned button and menu items.
+  ///
+  /// Defaults to true.
+  final bool showPinnedButtonDivider;
+
+
   /// Creates a copy of this style with the given fields replaced.
   OverlayMenuStyle copyWith({
     double? width,
@@ -151,6 +166,8 @@ class OverlayMenuStyle {
     OverlayMenuItemStyle? itemStyle,
     OverlayMenuItemStyle? selectedItemStyle,
     OverlayMenuDividerStyle? dividerStyle,
+    double? pinnedButtonHeight,
+    bool? showPinnedButtonDivider,
   }) {
     return OverlayMenuStyle(
       width: width ?? this.width,
@@ -169,6 +186,8 @@ class OverlayMenuStyle {
       itemStyle: itemStyle ?? this.itemStyle,
       selectedItemStyle: selectedItemStyle ?? this.selectedItemStyle,
       dividerStyle: dividerStyle ?? this.dividerStyle,
+      pinnedButtonHeight: pinnedButtonHeight ?? this.pinnedButtonHeight,
+      showPinnedButtonDivider: showPinnedButtonDivider ?? this.showPinnedButtonDivider,
     );
   }
 
@@ -192,7 +211,9 @@ class OverlayMenuStyle {
         other.scrollbarTheme == scrollbarTheme &&
         other.itemStyle == itemStyle &&
         other.selectedItemStyle == selectedItemStyle &&
-        other.dividerStyle == dividerStyle;
+        other.dividerStyle == dividerStyle &&
+        other.pinnedButtonHeight == pinnedButtonHeight &&
+        other.showPinnedButtonDivider == showPinnedButtonDivider;
   }
 
   @override
@@ -213,7 +234,11 @@ class OverlayMenuStyle {
       scrollbarTheme,
       itemStyle,
       selectedItemStyle,
-      dividerStyle,
+      Object.hash(
+        dividerStyle,
+        pinnedButtonHeight,
+        showPinnedButtonDivider,
+      ),
     );
   }
 }

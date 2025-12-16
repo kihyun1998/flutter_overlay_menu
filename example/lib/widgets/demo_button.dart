@@ -136,6 +136,7 @@ class DemoButton extends StatelessWidget {
       style: config.toMenuStyle(context),
       barrierDismissible: config.barrierDismissible,
       barrierColor: config.barrierColor,
+      pinnedButton: config.showPinnedButton ? _buildPinnedButton(context) : null,
       builder: (context) => OverlayMenu(
         items: _buildMenuItems(context),
         emptyWidget: const Center(
@@ -154,6 +155,51 @@ class DemoButton extends StatelessWidget {
     if (result != null) {
       onItemSelected(result);
     }
+  }
+
+  Widget _buildPinnedButton(BuildContext context) {
+    final isDarkBg = config.backgroundColor.computeLuminance() < 0.5;
+    final textColor = isDarkBg ? Colors.white : Colors.black87;
+    
+    return Material(
+      color: Colors.blue.shade50,
+      child: InkWell(
+        onTap: () {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Row(
+                children: [
+                  Icon(Icons.settings, color: Colors.white),
+                  SizedBox(width: 8),
+                  Text('Pinned button clicked!'),
+                ],
+              ),
+              duration: Duration(seconds: 2),
+            ),
+          );
+        },
+        child: Container(
+          height: config.pinnedButtonHeight,
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Row(
+            children: [
+              Icon(Icons.settings, size: 20, color: Colors.blue.shade700),
+              const SizedBox(width: 12),
+              Text(
+                'Settings',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.blue.shade900,
+                ),
+              ),
+              const Spacer(),
+              Icon(Icons.arrow_forward, size: 16, color: Colors.blue.shade700),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   List<OverlayMenuEntry> _buildMenuItems(BuildContext context) {
