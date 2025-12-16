@@ -153,9 +153,9 @@ class OverlayMenu<T> extends StatelessWidget {
           child: content,
         );
       }
-      
+
       // Allow scrolling if empty widget is large
-       content = ConstrainedBox(
+      content = ConstrainedBox(
         constraints: BoxConstraints(
           maxHeight: scrollableMaxHeight,
         ),

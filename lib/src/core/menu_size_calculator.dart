@@ -1,8 +1,9 @@
 import 'dart:ui';
+
 import '../models/menu_style.dart';
+import '../widgets/overlay_menu_divider.dart';
 import '../widgets/overlay_menu_entry.dart';
 import '../widgets/overlay_menu_item.dart';
-import '../widgets/overlay_menu_divider.dart';
 
 /// Calculates the estimated size of an overlay menu.
 ///
@@ -86,7 +87,7 @@ class MenuSizeCalculator {
     // Add pinned button height (if provided)
     if (hasPinnedButton && style?.pinnedButtonHeight != null) {
       totalHeight += style!.pinnedButtonHeight!;
-      
+
       // Add divider height if enabled
       if (style.showPinnedButtonDivider) {
         totalHeight += style.dividerStyle?.thickness ?? 1.0;
@@ -105,7 +106,7 @@ class MenuSizeCalculator {
     // Apply minHeight constraint
     // We do this BEFORE maxHeight to ensure minHeight is respected up to maxHeight
     if (style?.minHeight != null && totalHeight < style!.minHeight!) {
-      totalHeight = style!.minHeight!;
+      totalHeight = style.minHeight!;
     }
 
     // Apply maxHeight constraint

@@ -224,7 +224,8 @@ class _MenuStyleSection extends StatelessWidget {
           divisions: 20,
           unit: 'px',
           onChanged: (value) {
-            onConfigChanged(config.copyWith(minHeight: value > 0 ? value : null));
+            onConfigChanged(
+                config.copyWith(minHeight: value > 0 ? value : null));
           },
         ),
         const SizedBox(height: 12),

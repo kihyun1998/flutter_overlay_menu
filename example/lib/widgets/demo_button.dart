@@ -136,7 +136,8 @@ class DemoButton extends StatelessWidget {
       style: config.toMenuStyle(context),
       barrierDismissible: config.barrierDismissible,
       barrierColor: config.barrierColor,
-      pinnedButton: config.showPinnedButton ? _buildPinnedButton(context) : null,
+      pinnedButton:
+          config.showPinnedButton ? _buildPinnedButton(context) : null,
       builder: (context) => OverlayMenu(
         items: _buildMenuItems(context),
         emptyWidget: const Center(
@@ -158,9 +159,6 @@ class DemoButton extends StatelessWidget {
   }
 
   Widget _buildPinnedButton(BuildContext context) {
-    final isDarkBg = config.backgroundColor.computeLuminance() < 0.5;
-    final textColor = isDarkBg ? Colors.white : Colors.black87;
-    
     return Material(
       color: Colors.blue.shade50,
       child: InkWell(

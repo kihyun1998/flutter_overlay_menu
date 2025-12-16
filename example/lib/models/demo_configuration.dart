@@ -108,7 +108,6 @@ class DemoConfiguration {
   final bool showPinnedButton;
   final double pinnedButtonHeight;
 
-
   const DemoConfiguration({
     // Menu Style
     this.borderRadius = 8.0,

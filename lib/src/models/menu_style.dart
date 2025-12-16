@@ -147,7 +147,6 @@ class OverlayMenuStyle {
   /// Defaults to true.
   final bool showPinnedButtonDivider;
 
-
   /// Creates a copy of this style with the given fields replaced.
   OverlayMenuStyle copyWith({
     double? width,
@@ -187,7 +186,8 @@ class OverlayMenuStyle {
       selectedItemStyle: selectedItemStyle ?? this.selectedItemStyle,
       dividerStyle: dividerStyle ?? this.dividerStyle,
       pinnedButtonHeight: pinnedButtonHeight ?? this.pinnedButtonHeight,
-      showPinnedButtonDivider: showPinnedButtonDivider ?? this.showPinnedButtonDivider,
+      showPinnedButtonDivider:
+          showPinnedButtonDivider ?? this.showPinnedButtonDivider,
     );
   }
 
