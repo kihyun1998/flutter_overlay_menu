@@ -2,6 +2,14 @@ name: flutter_overlay_menu
 description: "A highly customizable overlay menu package for Flutter. Provides showOverlayMenu() function to display animated menus with smart positioning and Material Design styling."
 version: 0.1.1
 homepage: https://github.com/kihyun1998/flutter_overlay_menu
+repository: https://github.com/kihyun1998/flutter_overlay_menu
+issue_tracker: https://github.com/kihyun1998/flutter_overlay_menu/issues
+
+topics:
+  - menu
+  - overlay
+  - context-menu
+  - popup
 
 environment:
   sdk: ">=3.0.0 <4.0.0"
